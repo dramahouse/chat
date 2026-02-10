@@ -18,6 +18,7 @@
             --accent-green: #34c759;
         }
 
+        /* RESET & BASE */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         html, body { 
@@ -28,6 +29,20 @@
             overflow: hidden; 
             display: flex; 
             flex-direction: column; 
+        }
+
+        /* FIXED VERSION TAG - STAYS ON ALL SCREENS */
+        .version-tag {
+            position: fixed;
+            bottom: 12px;
+            right: 15px;
+            font-size: 11px;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 1000000; /* Above everything */
+            pointer-events: none;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         /* SUSPENSION OVERLAY */
@@ -91,7 +106,7 @@
         .view.active { display: flex; }
         .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 15px; text-transform: uppercase; }
 
-        /* CHAT FIXED BUBBLES */
+        /* CHAT BUBBLES */
         .chat-container { flex: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
         
@@ -101,14 +116,14 @@
             border: 1px solid var(--border); 
             padding: 10px 14px; 
             border-radius: 12px; 
-            max-width: fit-content; /* SIZES TO MESSAGE */
+            max-width: fit-content; 
             min-width: 60px;
             position: relative; 
             word-wrap: break-word; 
             align-self: flex-start;
         }
         .msg.me { align-self: flex-end; background: #222; }
-        .msg.bot { align-self: center; background: transparent; border: none; color: var(--accent-red); font-weight: 800; text-align: center; max-width: 90%; }
+        .msg.bot { align-self: center; background: transparent; border: none; color: var(--accent-red); font-weight: 800; text-align: center; max-width: 90%; font-size: 0.75rem; }
         
         .msg-user { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); margin-bottom: 3px; display: block; text-transform: lowercase; }
         .del-btn { position: absolute; top: -8px; right: -8px; color: var(--accent-red); cursor: pointer; font-size: 14px; font-weight: 900; display: none; background: black; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 18px; border: 1px solid var(--border); }
@@ -146,11 +161,13 @@
 </head>
 <body>
 
+    <div class="version-tag">V1.2.5</div>
+
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
         <h2 style="font-weight: 800; font-size: 2rem;">ACCOUNT SUSPENDED</h2>
         <p style="color: var(--text-dim); margin-top: 10px;">Contact Logan to appeal.</p>
-        <button class="btn-signin" style="width: 200px; margin-top: 40px;" onclick="location.reload()">Refresh</button>
+        <button class="btn-signin" style="width: 200px; margin-top: 40px;" onclick="location.reload()">Refresh Status</button>
     </div>
 
     <div id="mod-modal">
@@ -158,13 +175,13 @@
             <h3 id="mod-user-title" style="margin-bottom: 20px;">Moderate</h3>
             <button class="btn-red-fill" onclick="modAction('strike')" style="margin-bottom:10px;">Strike Resident</button>
             <button class="btn-signin" onclick="modAction('warn')" style="margin-bottom:10px; background: transparent; border: 1px solid #333; color: white;">Public Warning</button>
-            <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Just Delete</button>
+            <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Delete Message Only</button>
             <button onclick="closeMod()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; margin-top:15px; font-weight: 800;">CANCEL</button>
         </div>
     </div>
 
     <header id="mobile-nav">
-        <div style="font-weight: 800; letter-spacing: -1px;">DH.XYZ</div>
+        <div style="font-weight: 800;">DH.XYZ</div>
         <button onclick="toggleSidebar()" style="background:white; color:black; border:none; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.75rem;">MENU</button>
     </header>
 
@@ -224,7 +241,7 @@
                     </div>
 
                     <div class="card">
-                        <span class="card-label">DANGER ZONE</span>
+                        <span class="card-label">SYSTEM</span>
                         <button class="btn-red-fill" onclick="promptNuke()">NUKE ALL MESSAGES</button>
                     </div>
                 </div>
