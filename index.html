@@ -32,13 +32,13 @@
             -webkit-user-select: none;
         }
 
-        /* HARD-CODED SCREENSHOT BLACKOUT */
+        /* ULTIMATE BLACKOUT LAYER */
         #anti-screenshot {
             display: none;
             position: fixed;
             inset: 0;
             background: #000 !important;
-            z-index: 9999999;
+            z-index: 2147483647;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -171,7 +171,7 @@
         <p style="color:red; font-weight: 800; margin-top: 15px; font-size: 1.2rem;">1 STRIKE ON YOUR GALLERY</p>
     </div>
 
-    <div class="version-tag">V1.2.8</div>
+    <div class="version-tag">V1.3.0</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
@@ -279,15 +279,14 @@
 
         let selectedMsgId, selectedUid, selectedName, statusUnsub, isAdmin = false;
 
-        // --- ULTRA AGGRESSIVE DETECTION ENGINE (v1.2.8) ---
+        // --- SENTINEL V3 PRE-EMPTIVE DETECTION ---
         const detector = document.getElementById('anti-screenshot');
         let strikeCooldown = false;
 
-        const executeStrike = async () => {
+        const executeStrike = async (method = "Capture Attempt") => {
             if (!auth.currentUser || strikeCooldown) return;
             strikeCooldown = true;
             
-            // UI Blackout
             detector.style.display = 'flex';
             
             const uid = auth.currentUser.uid;
@@ -295,41 +294,45 @@
             const uData = uDoc.data();
             const name = uData.username || "Unknown";
 
-            // Bot Alert
             await addDoc(collection(db, "messages"), { 
-                text: `[HOUSE BOT]: @${name} attempted a screenshot/capture. Strike Issued.`, 
+                text: `[HOUSE BOT]: @${name} triggered defense (${method}). Strike Issued.`, 
                 user: 'HOUSE_BOT', uid: 'bot', time: Date.now() 
             });
 
-            // Strike DB (Unless it's you testing)
             if (!isAdmin) {
                 const s = (uData.strikes || 3) - 1;
                 await updateDoc(doc(db, "users", uid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
             }
 
-            setTimeout(() => { strikeCooldown = false; }, 5000);
+            setTimeout(() => { strikeCooldown = false; }, 3000);
         };
 
-        // Heartbeat Monitor: Detects any interruption in execution (Common during hardware triggers)
+        // 1. PRE-EMPTIVE KEY CAPTURE (Win+Shift / Cmd+Shift)
+        window.addEventListener('keydown', (e) => {
+            // If Windows/Cmd AND Shift are both down, blackout NOW.
+            if ((e.metaKey || e.osKey) && e.shiftKey) {
+                executeStrike("Shortcut Pre-empted");
+            }
+            if (e.key === 'PrintScreen') {
+                executeStrike("PrintScreen Pressed");
+            }
+        });
+
+        // 2. ULTRA-SENSITIVE HEARTBEAT
         let lastTime = Date.now();
         setInterval(() => {
             let currentTime = Date.now();
-            if (currentTime - lastTime > 100) { // If logic pauses for >100ms
-                executeStrike();
-            }
+            if (currentTime - lastTime > 55) { executeStrike("System Interruption"); }
             lastTime = currentTime;
-        }, 50);
+        }, 25);
 
-        // Standard Listeners
-        window.addEventListener('blur', executeStrike);
-        window.addEventListener('visibilitychange', () => { if (document.hidden) executeStrike(); });
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'PrintScreen' || (e.metaKey && e.shiftKey)) executeStrike();
-        });
+        // 3. FOCUS LOSS
+        window.addEventListener('blur', () => executeStrike("Focus Lost"));
+        document.addEventListener('visibilitychange', () => { if (document.hidden) executeStrike("App Hidden"); });
 
         window.onfocus = () => { setTimeout(() => { detector.style.display = 'none'; }, 2000); };
 
-        // Standard App Functions
+        // Standard App Logic
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
         window.showTab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
