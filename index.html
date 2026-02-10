@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Drama House | DH.XYZ</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -19,7 +19,16 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-black); color: var(--text-white); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        html, body { 
+            background-color: var(--bg-black); 
+            color: var(--text-white); 
+            height: 100dvh; 
+            width: 100vw;
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
 
         /* SUSPENSION OVERLAY */
         #suspension-overlay {
@@ -27,7 +36,7 @@
             position: fixed;
             inset: 0;
             background: black;
-            z-index: 99999;
+            z-index: 100000;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -38,13 +47,14 @@
         /* MOBILE HEADER */
         #mobile-nav {
             display: none;
-            height: 60px;
+            height: 65px;
             border-bottom: 1px solid var(--border);
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
             background: var(--bg-black);
             z-index: 1001;
+            padding-top: env(safe-area-inset-top);
         }
 
         /* LOGIN SCREEN */
@@ -56,7 +66,7 @@
         .btn-signin { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
         /* APP LAYOUT */
-        #app-container { display: none; flex: 1; height: 100%; overflow: hidden; }
+        #app-container { display: none; flex: 1; height: 100%; overflow: hidden; position: relative; }
         
         .sidebar { 
             width: 240px; 
@@ -67,6 +77,7 @@
             flex-direction: column; 
             gap: 8px; 
             height: 100%;
+            z-index: 1002;
             transition: transform 0.3s ease;
         }
         .logo-small { font-weight: 800; font-size: 1.2rem; margin-bottom: 40px; }
@@ -75,78 +86,86 @@
         .logout-link { margin-top: auto; color: #ff4d4d; font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 12px 16px; }
 
         /* CONTENT AREA */
-        .content-area { flex: 1; height: 100%; overflow: hidden; padding: 30px; display: flex; flex-direction: column; }
-        .view { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+        .content-area { flex: 1; height: 100%; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .view { display: none; flex-direction: column; height: 100%; padding: 20px; }
         .view.active { display: flex; }
-        .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 20px; text-transform: uppercase; }
+        .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 15px; text-transform: uppercase; }
 
-        /* CHAT */
+        /* CHAT FIXED BUBBLES */
         .chat-container { flex: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        #chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { background: #111; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px; max-width: 80%; position: relative; }
-        .msg-user { font-size: 0.7rem; font-weight: 800; color: var(--text-dim); margin-bottom: 4px; display: block; }
-        .del-btn { position: absolute; top: 5px; right: 8px; color: var(--accent-red); cursor: pointer; font-size: 10px; font-weight: 900; display: none; }
+        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
+        
+        .msg-wrapper { display: flex; flex-direction: column; width: 100%; }
+        .msg { 
+            background: #111; 
+            border: 1px solid var(--border); 
+            padding: 10px 14px; 
+            border-radius: 12px; 
+            max-width: fit-content; /* SIZES TO MESSAGE */
+            min-width: 60px;
+            position: relative; 
+            word-wrap: break-word; 
+            align-self: flex-start;
+        }
+        .msg.me { align-self: flex-end; background: #222; }
+        .msg.bot { align-self: center; background: transparent; border: none; color: var(--accent-red); font-weight: 800; text-align: center; max-width: 90%; }
+        
+        .msg-user { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); margin-bottom: 3px; display: block; text-transform: lowercase; }
+        .del-btn { position: absolute; top: -8px; right: -8px; color: var(--accent-red); cursor: pointer; font-size: 14px; font-weight: 900; display: none; background: black; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 18px; border: 1px solid var(--border); }
         body.is-admin .del-btn { display: block; }
         
-        .chat-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); background: var(--bg-black); }
-        .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 15px; border-radius: 8px; color: white; outline: none; }
-        .btn-send { background: white; color: black; border: none; padding: 0 25px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .chat-footer { padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--border); background: var(--bg-black); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+        .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 14px; border-radius: 8px; color: white; outline: none; font-size: 16px; }
+        .btn-send { background: white; color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
         /* MODAL */
         #mod-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; justify-content: center; align-items: center; }
         .modal-card { background: #0a0a0a; border: 1px solid var(--border); padding: 30px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; }
 
-        /* MANAGEMENT TABLE & CARDS */
-        .mgmt-scroll { flex: 1; overflow-y: auto; padding-right: 10px; }
+        /* MANAGEMENT */
+        .mgmt-scroll { flex: 1; overflow-y: auto; }
         .card { background: #080808; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .card-label { font-size: 0.75rem; font-weight: 800; color: var(--text-dim); margin-bottom: 15px; display: block; }
-        
-        table { width: 100%; border-collapse: collapse; min-width: 400px; }
+        .mgmt-table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 450px; }
         th { text-align: left; color: var(--text-dim); font-size: 0.7rem; padding: 10px; border-bottom: 1px solid var(--border); }
         td { padding: 15px 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-        
-        /* ACTION BUTTONS */
-        .action-btn { font-size: 0.65rem; font-weight: 800; padding: 6px 10px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); text-transform: uppercase; margin-right: 4px; display: inline-block; }
+        .action-btn { font-size: 0.65rem; font-weight: 800; padding: 6px 10px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); text-transform: uppercase; }
         .btn-suspend { color: var(--accent-red); border-color: var(--accent-red); }
         .btn-unsuspend { color: var(--accent-green); border-color: var(--accent-green); }
-        .btn-strike { color: var(--accent-blue); border-color: var(--accent-blue); }
+        .btn-blue-fill { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-red-fill { background: var(--accent-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
         @media (max-width: 768px) {
             #mobile-nav { display: flex; }
-            #app-container { flex-direction: column; }
-            .sidebar { position: fixed; left: -240px; top: 60px; bottom: 0; z-index: 1000; }
+            .sidebar { position: absolute; left: -240px; top: 0; bottom: 0; }
             .sidebar.open { transform: translateX(240px); }
-            .content-area { padding: 15px; }
-            .view-title { font-size: 1rem; }
-            .mgmt-table-container { overflow-x: auto; }
+            .content-area { width: 100vw; }
         }
-
-        .btn-blue-fill { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        .btn-red-fill { background: var(--accent-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
-<body class="is-admin">
+<body>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
-        <h2 style="font-weight: 800;">ACCESS REVOKED</h2>
-        <p style="color: var(--text-dim); margin-top: 10px;">This account is suspended.</p>
-        <button class="btn-signin" style="width: 200px; margin-top: 30px;" onclick="location.reload()">Back</button>
+        <h2 style="font-weight: 800; font-size: 2rem;">ACCOUNT SUSPENDED</h2>
+        <p style="color: var(--text-dim); margin-top: 10px;">Contact Logan to appeal.</p>
+        <button class="btn-signin" style="width: 200px; margin-top: 40px;" onclick="location.reload()">Refresh</button>
     </div>
 
     <div id="mod-modal">
         <div class="modal-card">
-            <h3 id="mod-user-title" style="margin-bottom: 20px;">Moderate User</h3>
+            <h3 id="mod-user-title" style="margin-bottom: 20px;">Moderate</h3>
             <button class="btn-red-fill" onclick="modAction('strike')" style="margin-bottom:10px;">Strike Resident</button>
             <button class="btn-signin" onclick="modAction('warn')" style="margin-bottom:10px; background: transparent; border: 1px solid #333; color: white;">Public Warning</button>
-            <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Just Delete Message</button>
+            <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Just Delete</button>
             <button onclick="closeMod()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; margin-top:15px; font-weight: 800;">CANCEL</button>
         </div>
     </div>
 
     <header id="mobile-nav">
         <div style="font-weight: 800; letter-spacing: -1px;">DH.XYZ</div>
-        <button onclick="toggleSidebar()" style="background:transparent; border:1px solid #333; color:white; padding:6px 12px; border-radius:6px; font-weight:800; font-size:0.7rem;">MENU</button>
+        <button onclick="toggleSidebar()" style="background:white; color:black; border:none; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.75rem;">MENU</button>
     </header>
 
     <div id="login-screen">
@@ -174,7 +193,7 @@
                 <div class="chat-container">
                     <div id="chat-messages"></div>
                     <div class="chat-footer">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Message residents...">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Message...">
                         <button class="btn-send" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
@@ -184,29 +203,29 @@
                 <div class="view-title">Management</div>
                 <div class="mgmt-scroll">
                     <div class="card">
-                        <span class="card-label">REGISTER RESIDENT</span>
+                        <span class="card-label">ADD RESIDENT</span>
                         <input type="text" id="reg-user" placeholder="Username" class="chat-input" style="width:100%; margin-bottom:10px;">
                         <input type="password" id="reg-pass" placeholder="Password" class="chat-input" style="width:100%; margin-bottom:10px;">
-                        <select id="reg-role" class="chat-input" style="width:100%; margin-bottom:15px; background:#0e0e0e;">
+                        <select id="reg-role" class="chat-input" style="width:100%; margin-bottom:15px; background:#0e0e0e; color:white;">
                             <option value="member">Member</option>
                             <option value="admin">Admin</option>
                         </select>
-                        <button class="btn-blue-fill" onclick="registerUser()">Add to House</button>
+                        <button class="btn-blue-fill" onclick="registerUser()">Add Account</button>
                     </div>
 
                     <div class="card">
-                        <span class="card-label">HOUSE REGISTRY</span>
+                        <span class="card-label">RESIDENT REGISTRY</span>
                         <div class="mgmt-table-container">
                             <table>
-                                <thead><tr><th>User</th><th>Status</th><th>Strikes</th><th>Controls</th></tr></thead>
+                                <thead><tr><th>User</th><th>Status</th><th>Strikes</th><th>Action</th></tr></thead>
                                 <tbody id="user-list-body"></tbody>
                             </table>
                         </div>
                     </div>
 
                     <div class="card">
-                        <span class="card-label">SYSTEM</span>
-                        <button class="btn-red-fill" onclick="promptNuke()">NUKE ALL CHAT DATA</button>
+                        <span class="card-label">DANGER ZONE</span>
+                        <button class="btn-red-fill" onclick="promptNuke()">NUKE ALL MESSAGES</button>
                     </div>
                 </div>
             </div>
@@ -231,10 +250,9 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let selectedMsgId, selectedUid, selectedName, statusUnsub;
+        let selectedMsgId, selectedUid, selectedName, statusUnsub, isAdmin = false;
 
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
-
         window.showTab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
@@ -247,12 +265,21 @@
             if (user) {
                 const uDoc = await getDoc(doc(db, "users", user.uid));
                 if (uDoc.exists() && uDoc.data().status === 'suspended') {
-                    handleLogout(); return;
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('suspension-overlay').style.display = 'flex';
+                    return; 
                 }
+
                 statusUnsub = onSnapshot(doc(db, "users", user.uid), (s) => {
-                    if (s.data()?.status === 'suspended') handleLogout();
+                    if (s.data()?.status === 'suspended') {
+                        document.getElementById('app-container').style.display = 'none';
+                        document.getElementById('suspension-overlay').style.display = 'flex';
+                    }
                 });
-                if (user.email.includes('admin.logan') || uDoc.data()?.role === 'admin') {
+
+                isAdmin = user.email.includes('admin.logan') || uDoc.data()?.role === 'admin';
+                if (isAdmin) {
+                    document.body.classList.add('is-admin');
                     document.querySelectorAll('.admin-ui').forEach(el => el.style.display = 'block');
                     loadUserList();
                 }
@@ -268,9 +295,7 @@
         window.handleLogin = async () => {
             const u = document.getElementById('login-user').value.toLowerCase().trim();
             const p = document.getElementById('login-pass').value;
-            try {
-                await signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
-            } catch (e) { alert("Invalid Credentials"); }
+            try { await signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p); } catch (e) { alert("Access Denied."); }
         };
 
         window.handleLogout = () => { if(statusUnsub) statusUnsub(); signOut(auth); location.reload(); };
@@ -283,17 +308,24 @@
                 snap.forEach(docSnap => {
                     const data = docSnap.data();
                     const isBot = data.uid === 'bot';
-                    msgBox.innerHTML += `<div class="msg" style="${auth.currentUser?.uid === data.uid ? 'align-self:flex-end; background:#222;' : ''} ${isBot ? 'align-self:center; background:transparent; border:none; color:var(--accent-red); font-weight:800; font-size:0.7rem; text-align:center;' : ''}">
-                        ${isBot ? '' : `<span class="msg-user">${data.user}</span>`}
-                        <span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">X</span>
-                        ${data.text}</div>`;
+                    const isMe = auth.currentUser?.uid === data.uid;
+                    const delHtml = isAdmin ? `<span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">×</span>` : '';
+                    
+                    msgBox.innerHTML += `
+                        <div class="msg-wrapper">
+                            <div class="msg ${isMe ? 'me' : ''} ${isBot ? 'bot' : ''}">
+                                ${isBot ? '' : `<span class="msg-user">${data.user}</span>`}
+                                ${delHtml}
+                                ${data.text}
+                            </div>
+                        </div>`;
                 });
                 msgBox.scrollTop = msgBox.scrollHeight;
             });
         }
 
         window.openMod = (mid, uid, name) => {
-            if(uid === 'bot') return;
+            if(!isAdmin || uid === 'bot') return;
             selectedMsgId = mid; selectedUid = uid; selectedName = name;
             document.getElementById('mod-user-title').innerText = `@${name}`;
             document.getElementById('mod-modal').style.display = 'flex';
@@ -302,24 +334,27 @@
         window.closeMod = () => document.getElementById('mod-modal').style.display = 'none';
 
         window.modAction = async (type) => {
+            if(!isAdmin) return;
             await deleteDoc(doc(db, "messages", selectedMsgId));
             if (type === 'strike') {
                 const uDoc = await getDoc(doc(db, "users", selectedUid));
                 const s = (uDoc.data()?.strikes || 3) - 1;
                 await updateDoc(doc(db, "users", selectedUid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
-                await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${selectedName} STRIKED. (${s}/3 LEFT)`, user: 'BOT', uid: 'bot', time: Date.now() });
+                await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${selectedName} hit ${s} strikes and is ${s <= 0 ? 'SUSPENDED' : 'STRIKED'}.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
             } else if (type === 'warn') {
-                await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: FINAL WARNING TO @${selectedName}.`, user: 'BOT', uid: 'bot', time: Date.now() });
+                await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${selectedName} - FINAL WARNING.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
             }
             closeMod();
         };
 
         window.registerUser = async () => {
+            if(!isAdmin) return;
             const u = document.getElementById('reg-user').value.toLowerCase().trim();
             const p = document.getElementById('reg-pass').value;
+            const r = document.getElementById('reg-role').value;
             const cred = await createUserWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
-            await setDoc(doc(db, "users", cred.user.uid), { username: u, role: document.getElementById('reg-role').value, status: 'active', strikes: 3 });
-            alert("Resident added.");
+            await setDoc(doc(db, "users", cred.user.uid), { username: u, role: r, status: 'active', strikes: 3 });
+            alert("Resident Created.");
         };
 
         window.loadUserList = () => {
@@ -329,19 +364,13 @@
                 snap.forEach(d => {
                     const data = d.data();
                     if(data.username === 'admin.logan') return;
-                    const isSuspended = data.status === 'suspended';
+                    const isSusp = data.status === 'suspended';
                     list.innerHTML += `<tr>
-                        <td><b style="color:white;">${data.username}</b><br><small style="color:#444">${data.role}</small></td>
-                        <td style="color:${isSuspended ? 'var(--accent-red)' : 'var(--accent-green)'}; font-weight:800; font-size:0.7rem;">${data.status.toUpperCase()}</td>
+                        <td><b>${data.username}</b><br><small>${data.role}</small></td>
+                        <td style="color:${isSusp ? 'var(--accent-red)' : 'var(--accent-green)'}; font-weight:800;">${data.status.toUpperCase()}</td>
                         <td>${data.strikes}/3</td>
                         <td>
-                            <div style="display:flex;">
-                                <span class="action-btn btn-strike" onclick="modActionStandalone('${d.id}', '${data.username}', 'strike')">Strike</span>
-                                ${isSuspended ? 
-                                    `<span class="action-btn btn-unsuspend" onclick="setUserStatus('${d.id}', 'active')">Unsuspend</span>` : 
-                                    `<span class="action-btn btn-suspend" onclick="setUserStatus('${d.id}', 'suspended')">Suspend</span>`
-                                }
-                            </div>
+                            <span class="action-btn ${isSusp ? 'btn-unsuspend' : 'btn-suspend'}" onclick="setUserStatus('${d.id}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span>
                         </td>
                     </tr>`;
                 });
@@ -349,15 +378,8 @@
         };
 
         window.setUserStatus = async (uid, status) => {
-            await updateDoc(doc(db, "users", uid), { status: status });
-            if(status === 'active') await updateDoc(doc(db, "users", uid), { strikes: 3 });
-        };
-
-        window.modActionStandalone = async (uid, name, type) => {
-            const uDoc = await getDoc(doc(db, "users", uid));
-            const s = (uDoc.data()?.strikes || 3) - 1;
-            await updateDoc(doc(db, "users", uid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
-            await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${name} STRIKED BY ADMIN. (${s}/3 LEFT)`, user: 'BOT', uid: 'bot', time: Date.now() });
+            if(!isAdmin) return;
+            await updateDoc(doc(db, "users", uid), { status: status, strikes: status === 'active' ? 3 : 0 });
         };
 
         window.sendMessage = async () => {
@@ -367,7 +389,8 @@
         };
 
         window.promptNuke = async () => {
-            if(confirm("PERMANENTLY WIPE CHAT?")) {
+            if(!isAdmin) return;
+            if(confirm("THIS WILL WIPE ALL CHAT HISTORY. PROCEED?")) {
                 const q = await getDocs(collection(db, "messages"));
                 q.forEach(async (d) => await deleteDoc(d.ref));
             }
