@@ -40,56 +40,56 @@
         .login-card h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 30px; letter-spacing: -2px; filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055); }
         .input-group { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 25px; }
         .input-group input, .input-group select { background: var(--bg-input); border: none; padding: 20px; color: white; font-size: 1.1rem; outline: none; border-bottom: 1px solid var(--border); }
-        .input-group select { appearance: none; color: var(--text-dim); }
         .btn-signin { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
         /* APP LAYOUT */
         #app-container { display: none; width: 100vw; height: 100vh; grid-template-columns: 240px 1fr; }
         
-        /* SIDEBAR */
         .sidebar { background: var(--bg-black); padding: 30px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; height: 100vh; }
         .logo-small { font-weight: 800; font-size: 1.2rem; margin-bottom: 40px; }
         .nav-link { color: var(--text-dim); padding: 12px 16px; font-weight: 600; cursor: pointer; border-radius: 8px; font-size: 0.9rem; }
         .nav-link.active { color: white; background: #1a1a1a; }
         .logout-link { margin-top: auto; color: #ff4d4d; font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 12px 16px; }
 
-        /* MAIN CONTENT AREA - STRETCHED */
-        .content-area { height: 100vh; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; }
-        .view { display: none; flex-direction: column; flex-grow: 1; height: 100%; }
+        /* MAIN CONTENT AREA */
+        .content-area { height: 100vh; overflow: hidden; padding: 40px; display: flex; flex-direction: column; flex-grow: 1; }
+        .view { display: none; flex-direction: column; height: 100%; }
         .view.active { display: flex; }
         .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 20px; text-transform: uppercase; }
 
-        /* CHAT BOX - FULL HEIGHT FIX */
-        .chat-container { flex-grow: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
-        #chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        /* CHAT BOX - FULL LENGTH FIX */
+        .chat-container { flex: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; min-height: 0; }
+        #chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .msg { background: #111; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px; max-width: 80%; position: relative; }
         .msg-user { font-size: 0.7rem; font-weight: 800; color: var(--text-dim); margin-bottom: 4px; display: block; }
-        .del-btn { position: absolute; top: 5px; right: 8px; color: var(--accent-red); cursor: pointer; font-size: 10px; font-weight: 900; display: none; }
+        .del-btn { position: absolute; top: 5px; right: 8px; color: var(--accent-red); cursor: pointer; font-size: 10px; font-weight: 900; display: none; padding: 5px; }
         body.is-admin .del-btn { display: block; }
         
-        .chat-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); }
+        .chat-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); background: var(--bg-black); }
         .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 15px; border-radius: 8px; color: white; outline: none; }
         .btn-send { background: white; color: black; border: none; padding: 0 25px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
+        /* MODAL */
+        #mod-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; justify-content: center; align-items: center; }
+        .modal-card { background: #0a0a0a; border: 1px solid var(--border); padding: 30px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; }
+
         /* MANAGEMENT */
+        .mgmt-scroll { flex: 1; overflow-y: auto; }
         .card { background: #080808; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .card-label { font-size: 0.75rem; font-weight: 800; color: var(--text-dim); margin-bottom: 15px; display: block; }
-        .mgmt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; font-size: 0.7rem; color: var(--text-dim); padding: 10px; border-bottom: 1px solid var(--border); }
-        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-        .btn-blue { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        .btn-red { background: var(--accent-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.85rem; }
 
         @media (max-width: 768px) {
             #app-container { grid-template-columns: 1fr; }
             .sidebar { position: fixed; left: -240px; z-index: 1000; transition: 0.3s; }
             .sidebar.open { left: 0; }
-            .content-area { padding: 20px; }
-            .mgmt-grid { grid-template-columns: 1fr; }
+            .content-area { padding: 15px; }
         }
 
-        #toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 12px 24px; border-radius: 50px; font-weight: 700; z-index: 30000; }
+        .btn-blue { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
+        .btn-red { background: var(--accent-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-outline { background: transparent; color: white; border: 1px solid var(--border); width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -97,7 +97,16 @@
     <div id="suspension-overlay">
         <h1 style="font-size: 3rem;">🚫</h1>
         <h2 style="font-weight: 800;">SUSPENDED</h2>
-        <p style="color: var(--text-dim);">Access revoked until further notice.</p>
+    </div>
+
+    <div id="mod-modal">
+        <div class="modal-card">
+            <h3 id="mod-user-title" style="margin-bottom: 20px;">Moderate User</h3>
+            <button class="btn-red" onclick="modAction('strike')" style="margin-bottom:10px;">Strike + Remove</button>
+            <button class="btn-outline" onclick="modAction('warn')">Warn + Remove</button>
+            <button class="btn-outline" onclick="modAction('delete')">Just Remove Message</button>
+            <button onclick="closeMod()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; margin-top:10px;">Cancel</button>
+        </div>
     </div>
 
     <div id="login-screen">
@@ -112,7 +121,7 @@
     </div>
 
     <div id="app-container">
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar">
             <div class="logo-small">DH.XYZ</div>
             <div class="nav-link active" onclick="showTab('chat-view', this)">General Chat</div>
             <div class="nav-link admin-ui" style="display:none;" onclick="showTab('manager-view', this)">Management</div>
@@ -133,8 +142,7 @@
 
             <div id="manager-view" class="view">
                 <div class="view-title">Management</div>
-                
-                <div class="mgmt-grid">
+                <div class="mgmt-scroll">
                     <div class="card">
                         <span class="card-label">ADD NEW RESIDENT</span>
                         <input type="text" id="reg-user" placeholder="Username" class="chat-input" style="width:100%; margin-bottom:10px;">
@@ -145,26 +153,21 @@
                         </select>
                         <button class="btn-blue" onclick="registerUser()">Register Account</button>
                     </div>
-
+                    <div class="card">
+                        <span class="card-label">ACTIVE RESIDENTS</span>
+                        <table>
+                            <thead><tr><th>User</th><th>Role</th><th>Strikes</th><th>Action</th></tr></thead>
+                            <tbody id="user-list-body"></tbody>
+                        </table>
+                    </div>
                     <div class="card">
                         <span class="card-label">DANGER ZONE</span>
-                        <button class="btn-red" onclick="promptNuke()">NUKE CHAT HISTORY</button>
-                        <p style="color:var(--text-dim); font-size:0.7rem; margin-top:10px;">Warning: This deletes every single message permanently.</p>
+                        <button class="btn-red" onclick="promptNuke()">NUKE ALL CHAT</button>
                     </div>
-                </div>
-
-                <div class="card">
-                    <span class="card-label">ACTIVE RESIDENTS</span>
-                    <table>
-                        <thead><tr><th>Username</th><th>Role</th><th>Strikes</th><th>Action</th></tr></thead>
-                        <tbody id="user-list-body"></tbody>
-                    </table>
                 </div>
             </div>
         </main>
     </div>
-
-    <div id="toast"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -184,12 +187,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let userUnsubscribe;
-
-        window.showToast = (msg) => {
-            const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 3000);
-        };
+        let selectedMsgId, selectedUid, selectedName;
 
         window.showTab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -200,15 +198,14 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snapshot) => {
-                    const data = snapshot.data();
-                    if (data && data.status === 'suspended') {
+                onSnapshot(doc(db, "users", user.uid), (snapshot) => {
+                    if (snapshot.data()?.status === 'suspended') {
                         document.getElementById('suspension-overlay').style.display = 'flex';
-                        setTimeout(() => handleLogout(), 4000);
+                        setTimeout(() => signOut(auth), 4000);
                     }
                 });
                 getDoc(doc(db, "users", user.uid)).then(uDoc => {
-                    if (user.email.includes('admin.logan') || (uDoc.exists() && uDoc.data().role === 'admin')) {
+                    if (user.email.includes('admin.logan') || uDoc.data()?.role === 'admin') {
                         document.body.classList.add('is-admin');
                         document.querySelectorAll('.admin-ui').forEach(el => el.style.display = 'block');
                         loadUserList();
@@ -225,11 +222,10 @@
 
         window.handleLogin = () => {
             const u = document.getElementById('login-user').value.toLowerCase().trim();
-            const p = document.getElementById('login-pass').value;
-            signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p).catch(() => showToast("Access Denied"));
+            signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, document.getElementById('login-pass').value);
         };
 
-        window.handleLogout = () => { if(userUnsubscribe) userUnsubscribe(); signOut(auth); location.reload(); };
+        window.handleLogout = () => { signOut(auth); location.reload(); };
 
         function loadChat() {
             const q = query(collection(db, "messages"), orderBy("time", "asc"));
@@ -238,34 +234,41 @@
                 msgBox.innerHTML = '';
                 snap.forEach(docSnap => {
                     const data = docSnap.data();
-                    const isMe = auth.currentUser && data.uid === auth.currentUser.uid;
+                    const isMe = auth.currentUser?.uid === data.uid;
                     msgBox.innerHTML += `<div class="msg" style="${isMe ? 'align-self:flex-end; background:#222;' : ''}">
                         <span class="msg-user">${data.user}</span>
-                        <span class="del-btn" onclick="deleteMessage('${docSnap.id}')">X</span>
+                        <span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">X</span>
                         ${data.text}</div>`;
                 });
                 msgBox.scrollTop = msgBox.scrollHeight;
             });
         }
 
-        window.sendMessage = async () => {
-            const input = document.getElementById('chat-input');
-            if(!input.value.trim()) return;
-            await addDoc(collection(db, "messages"), { text: input.value, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, time: Date.now() });
-            input.value = '';
+        window.openMod = (mid, uid, name) => {
+            selectedMsgId = mid; selectedUid = uid; selectedName = name;
+            document.getElementById('mod-user-title').innerText = `@${name}`;
+            document.getElementById('mod-modal').style.display = 'flex';
         };
 
-        window.deleteMessage = async (id) => { await deleteDoc(doc(db, "messages", id)); };
+        window.closeMod = () => document.getElementById('mod-modal').style.display = 'none';
+
+        window.modAction = async (type) => {
+            await deleteDoc(doc(db, "messages", selectedMsgId));
+            if (type === 'strike') {
+                const uDoc = await getDoc(doc(db, "users", selectedUid));
+                const s = (uDoc.data()?.strikes || 3) - 1;
+                await updateDoc(doc(db, "users", selectedUid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
+                await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${selectedName} hit ${s} strikes.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
+            } else if (type === 'warn') {
+                await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: Warning issued to @${selectedName}.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
+            }
+            closeMod();
+        };
 
         window.registerUser = async () => {
             const u = document.getElementById('reg-user').value.toLowerCase().trim();
-            const p = document.getElementById('reg-pass').value;
-            const r = document.getElementById('reg-role').value;
-            try {
-                const cred = await createUserWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
-                await setDoc(doc(db, "users", cred.user.uid), { username: u, role: r, status: 'active', strikes: 3 });
-                showToast("Resident Registered");
-            } catch (e) { showToast("Error adding user"); }
+            const cred = await createUserWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, document.getElementById('reg-pass').value);
+            await setDoc(doc(db, "users", cred.user.uid), { username: u, role: document.getElementById('reg-role').value, status: 'active', strikes: 3 });
         };
 
         window.loadUserList = () => {
@@ -275,29 +278,21 @@
                 snap.forEach(d => {
                     const data = d.data();
                     if(data.username === 'admin.logan') return;
-                    list.innerHTML += `<tr>
-                        <td>${data.username}</td>
-                        <td style="text-transform:uppercase; font-weight:800; font-size:0.7rem;">${data.role}</td>
-                        <td>${data.strikes || 0}/3</td>
-                        <td>
-                            <span style="color:var(--accent-red); cursor:pointer; font-weight:800;" onclick="removeUser('${d.id}')">Remove</span> | 
-                            <span style="color:var(--accent-blue); cursor:pointer; font-weight:800;" onclick="issueStrike('${d.id}')">Strike</span>
-                        </td>
-                    </tr>`;
+                    list.innerHTML += `<tr><td>${data.username}</td><td>${data.role}</td><td>${data.strikes}/3</td>
+                        <td><span style="color:var(--accent-red); cursor:pointer;" onclick="deleteUser('${d.id}')">Remove</span></td></tr>`;
                 });
             });
         };
 
-        window.issueStrike = async (id) => {
-            const uDoc = await getDoc(doc(db, "users", id));
-            const newStrikes = (uDoc.data().strikes || 3) - 1;
-            await updateDoc(doc(db, "users", id), { strikes: newStrikes, status: newStrikes <= 0 ? 'suspended' : 'active' });
+        window.sendMessage = async () => {
+            const val = document.getElementById('chat-input').value;
+            if(!val) return;
+            await addDoc(collection(db, "messages"), { text: val, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, time: Date.now() });
+            document.getElementById('chat-input').value = '';
         };
 
-        window.removeUser = async (id) => { if(confirm("Remove resident?")) await updateDoc(doc(db, "users", id), { status: 'suspended' }); };
-
         window.promptNuke = async () => {
-            if(confirm("WIPE ALL HISTORY?")) {
+            if(confirm("DELETE EVERYTHING?")) {
                 const q = await getDocs(collection(db, "messages"));
                 q.forEach(async (d) => await deleteDoc(d.ref));
             }
