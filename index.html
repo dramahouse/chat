@@ -182,7 +182,7 @@
         <p style="color:red; font-weight: 800; margin-top: 15px; font-size: 1.2rem; text-transform: uppercase;">1 Strike on your gallery</p>
     </div>
 
-    <div class="version-tag">V1.2.6</div>
+    <div class="version-tag">V1.2.7</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
@@ -290,40 +290,50 @@
 
         let selectedMsgId, selectedUid, selectedName, statusUnsub, isAdmin = false;
 
-        // --- SCREENSHOT DETECTION ---
+        // --- ENHANCED SCREENSHOT DETECTION (v1.2.7) ---
         const detector = document.getElementById('anti-screenshot');
-        let isBlured = false;
         
-        window.onblur = async () => {
-            if (!auth.currentUser || isAdmin || isBlured) return;
-            isBlured = true;
+        const triggerDefense = async () => {
+            if (!auth.currentUser) return;
+            
+            // Show blackout immediately
             detector.style.display = 'flex';
             
-            // Strike the user
             const uid = auth.currentUser.uid;
             const uDoc = await getDoc(doc(db, "users", uid));
             const userData = uDoc.data();
-            const currentStrikes = userData.strikes || 3;
-            const newStrikes = currentStrikes - 1;
             
-            await updateDoc(doc(db, "users", uid), { 
-                strikes: newStrikes, 
-                status: newStrikes <= 0 ? 'suspended' : 'active' 
-            });
-
+            // Send House Bot alert (Everyone sees this, even for Admin testing)
             await addDoc(collection(db, "messages"), { 
-                text: `[HOUSE BOT]: @${userData.username} attempted a screenshot. STRIKE ISSUED (${newStrikes}/3 left).`, 
+                text: `[HOUSE BOT]: @${userData.username} attempted a screenshot/clip.`, 
                 user: 'HOUSE_BOT', 
                 uid: 'bot', 
                 time: Date.now() 
             });
+
+            // Only apply the strike if NOT an admin
+            if (!isAdmin) {
+                const currentStrikes = userData.strikes || 3;
+                const newStrikes = currentStrikes - 1;
+                await updateDoc(doc(db, "users", uid), { 
+                    strikes: newStrikes, 
+                    status: newStrikes <= 0 ? 'suspended' : 'active' 
+                });
+            }
         };
 
+        // Detects when user minimizes app, pulls down control center (iOS), or takes a snap
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'hidden') {
+                triggerDefense();
+            }
+        });
+
+        // Detects desktop PrintScreen or app switching
+        window.onblur = triggerDefense;
+
         window.onfocus = () => {
-            setTimeout(() => { 
-                detector.style.display = 'none'; 
-                isBlured = false;
-            }, 1500);
+            setTimeout(() => { detector.style.display = 'none'; }, 2000);
         };
 
         // Standard App Logic
