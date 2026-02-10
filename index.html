@@ -53,6 +53,7 @@
         .input-group { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 25px; }
         .input-group input { background: var(--bg-input); border: none; padding: 20px; color: white; font-size: 1.1rem; outline: none; border-bottom: 1px solid var(--border); }
         .btn-signin { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .forgot-link { color: var(--text-dim); font-size: 0.8rem; margin-top: 15px; display: block; cursor: pointer; text-decoration: none; font-weight: 600; }
 
         #app-container { display: none; flex: 1; height: 100%; overflow: hidden; position: relative; }
         
@@ -72,13 +73,13 @@
         .msg-wrapper { display: flex; flex-direction: column; width: 100%; }
         .msg { background: #111; border: 1px solid var(--border); padding: 10px 14px; border-radius: 12px; max-width: 85%; position: relative; align-self: flex-start; word-wrap: break-word; }
         .msg.me { align-self: flex-end; background: #222; }
-        .msg.bot { align-self: center; background: transparent; border: none; color: var(--accent-red); font-weight: 900; text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+        .msg.bot { align-self: center; background: transparent; border: none; color: var(--accent-red); font-weight: 900; text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 5px 0; }
         
         .msg-user { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); margin-bottom: 3px; display: block; text-transform: lowercase; }
         .del-btn { position: absolute; top: -8px; right: -8px; color: var(--accent-red); cursor: pointer; background: black; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 18px; border: 1px solid var(--border); display: none; font-weight: 900; }
         body.is-admin .del-btn { display: block; }
         
-        .chat-footer { padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--border); background: var(--bg-black); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+        .chat-footer { padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--border); background: var(--bg-black); padding-bottom: calc(12px + env(safe-area-inset-top)); }
         .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 14px; border-radius: 8px; color: white; outline: none; font-size: 16px; }
 
         #mod-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; justify-content: center; align-items: center; }
@@ -93,8 +94,10 @@
         td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
         
         .action-btn { font-size: 0.65rem; font-weight: 800; padding: 6px 10px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); text-transform: uppercase; }
-        .btn-blue-fill { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-blue-fill { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 5px; }
         .btn-red-fill { background: var(--accent-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+        select.chat-input { -webkit-appearance: none; appearance: none; cursor: pointer; }
 
         @media (max-width: 768px) {
             #mobile-nav { display: flex; }
@@ -105,7 +108,7 @@
 </head>
 <body>
 
-    <div class="version-tag">V1.4.2</div>
+    <div class="version-tag">V1.4.7</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
@@ -124,13 +127,14 @@
         <div class="modal-card">
             <h3 id="mod-user-title" style="margin-bottom: 20px;">Moderate</h3>
             <button class="btn-red-fill" onclick="modAction('strike')" style="margin-bottom:10px;">Strike Resident</button>
+            <button class="btn-red-fill" onclick="modAction('suspend')" style="margin-bottom:10px; background: #9c0000;">Suspend Account</button>
             <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Delete Message</button>
             <button onclick="closeMod()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; margin-top:15px; font-weight: 800;">CANCEL</button>
         </div>
     </div>
 
     <header id="mobile-nav">
-        <div style="font-weight: 800;">DH.XYZ</div>
+        <div style="font-weight: 800; letter-spacing: 1px;">DRAMA HOUSE</div>
         <button onclick="toggleSidebar()" style="background:white; color:black; border:none; padding:8px 16px; border-radius:8px; font-weight:800;">MENU</button>
     </header>
 
@@ -142,12 +146,13 @@
                 <input type="password" id="login-pass" placeholder="Password">
             </div>
             <button class="btn-signin" onclick="handleLogin()">Sign In</button>
+            <a class="forgot-link" onclick="forgotPasswordPrompt()">Click <span style="color: var(--accent-blue); text-decoration: underline;">HERE</span> if you forgot your password</a>
         </div>
     </div>
 
     <div id="app-container">
         <aside class="sidebar" id="sidebar">
-            <div style="font-weight: 800; font-size: 1.2rem; margin-bottom: 40px;">DH.XYZ</div>
+            <div style="font-weight: 800; font-size: 1.2rem; margin-bottom: 40px; letter-spacing: 1px;">DRAMA HOUSE</div>
             <div class="nav-link active" onclick="showTab('chat-view', this)">General Chat</div>
             <div class="nav-link admin-ui" style="display:none;" onclick="showTab('manager-view', this)">Management</div>
             <div class="logout-link" onclick="handleLogout()">Logout</div>
@@ -168,6 +173,16 @@
             <div id="manager-view" class="view">
                 <div class="view-title">Management</div>
                 <div class="mgmt-scroll">
+                    <div class="card">
+                        <span class="card-label">ACCOUNT SETTINGS</span>
+                        <select id="mgmt-user-select" class="chat-input" style="width:100%; margin-bottom:10px; background: var(--bg-input); color:white;">
+                            <option value="">Select Resident...</option>
+                        </select>
+                        <input type="text" id="mgmt-new-name" placeholder="New Display Name" class="chat-input" style="width:100%; margin-bottom:10px;">
+                        <input type="password" id="mgmt-new-pass" placeholder="Force New Password" class="chat-input" style="width:100%; margin-bottom:10px;">
+                        <button class="btn-blue-fill" onclick="updateSelectedUser()">Save Account Changes</button>
+                    </div>
+
                     <div class="card">
                         <span class="card-label">ADD RESIDENT</span>
                         <input type="text" id="reg-user" placeholder="Username" class="chat-input" style="width:100%; margin-bottom:10px;">
@@ -205,7 +220,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDoc, updateDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -222,12 +237,15 @@
         const db = getFirestore(app);
 
         let selectedMsgId, selectedUid, selectedName, isAdmin = false, isCurrentlyLocked = false, userStatusSub = null;
-
         const forbiddenPatterns = [/f[au*@k]/i, /sh[i*@t]/i, /b[i*@tch]/i, /n[i*@gg]/i, /p[u*@ssy]/i, /c[u*@nt]/i];
+        
+        async function botMessage(text) {
+            await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: ${text}`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
+        }
 
-        function isViolating(text) { return forbiddenPatterns.some(pattern => pattern.test(text)); }
+        document.getElementById('login-pass').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+        document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-        // LOCKDOWN LISTENER
         onSnapshot(doc(db, "system", "status"), (docSnap) => {
             if (docSnap.exists()) {
                 isCurrentlyLocked = docSnap.data().locked;
@@ -258,13 +276,13 @@
                         signOut(auth);
                     }
                 });
-
                 const uDoc = await getDoc(doc(db, "users", user.uid));
                 isAdmin = user.email.includes('admin.logan') || uDoc.data()?.role === 'admin';
                 if (isAdmin) {
                     document.body.classList.add('is-admin');
                     document.querySelectorAll('.admin-ui').forEach(el => el.style.display = 'block');
                     loadUserList();
+                    loadMgmtDropdown();
                 }
                 updateLockdownUI();
                 document.getElementById('login-screen').style.display = 'none';
@@ -276,14 +294,60 @@
             }
         });
 
+        // POPULATE DROPDOWN
+        function loadMgmtDropdown() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                const select = document.getElementById('mgmt-user-select');
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">Select Resident...</option>';
+                snap.forEach(d => {
+                    const data = d.data();
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = data.username + (data.role === 'admin' ? ' (Admin)' : '');
+                    select.appendChild(opt);
+                });
+                select.value = currentVal;
+            });
+        }
+
+        window.updateSelectedUser = async () => {
+            const uid = document.getElementById('mgmt-user-select').value;
+            const newName = document.getElementById('mgmt-new-name').value.trim();
+            const newPass = document.getElementById('mgmt-new-pass').value;
+            if (!uid) return alert("Select a resident first.");
+            
+            try {
+                if (newName) {
+                    await updateDoc(doc(db, "users", uid), { username: newName });
+                    alert(`Display name for user updated to ${newName}`);
+                }
+                if (newPass) {
+                    // Note: Changing passwords for other users requires Admin SDK or Re-auth. 
+                    // On client-side, this only works for the currently logged in admin's own password.
+                    if(uid === auth.currentUser.uid) {
+                        await updatePassword(auth.currentUser, newPass);
+                        alert("Your admin password has been updated.");
+                    } else {
+                        alert("Security Note: Password forcing requires Admin SDK. Use Registry to reset status instead.");
+                    }
+                }
+            } catch (e) { alert("Error: " + e.message); }
+        };
+
+        window.forgotPasswordPrompt = async () => {
+            const user = prompt("Enter your username:");
+            if (user) {
+                await botMessage(`RECOVERY REQUEST: @${user} has requested a password reset. Admin, please contact them.`);
+                alert("Request sent to administration.");
+            }
+        };
+
         window.toggleLockdown = async () => {
             if (!isAdmin) return;
-            try {
-                // Use setDoc with merge to ensure doc creation works
-                await setDoc(doc(db, "system", "status"), { locked: !isCurrentlyLocked }, { merge: true });
-            } catch (e) {
-                alert("Error: Check your Firestore Security Rules. " + e.message);
-            }
+            const newState = !isCurrentlyLocked;
+            await setDoc(doc(db, "system", "status"), { locked: newState }, { merge: true });
+            await botMessage(`System status changed to: ${newState ? 'LOCKED' : 'OPEN'}`);
         };
 
         window.handleLogin = async () => {
@@ -291,11 +355,6 @@
             const p = document.getElementById('login-pass').value;
             try { 
                 const cred = await signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
-                const uDoc = await getDoc(doc(db, "users", cred.user.uid));
-                if (uDoc.exists() && uDoc.data().status === 'suspended') {
-                    signOut(auth);
-                    alert("Account is suspended.");
-                }
             } catch (e) { alert("Access Denied."); }
         };
 
@@ -327,11 +386,21 @@
         window.closeMod = () => document.getElementById('mod-modal').style.display = 'none';
 
         window.modAction = async (type) => {
-            await deleteDoc(doc(db, "messages", selectedMsgId));
+            if (type === 'delete' || type === 'strike' || type === 'suspend') {
+                await deleteDoc(doc(db, "messages", selectedMsgId));
+            }
             if (type === 'strike') {
                 const uDoc = await getDoc(doc(db, "users", selectedUid));
                 const s = (uDoc.data()?.strikes || 3) - 1;
-                await updateDoc(doc(db, "users", selectedUid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
+                const finalStatus = s <= 0 ? 'suspended' : 'active';
+                await updateDoc(doc(db, "users", selectedUid), { strikes: s, status: finalStatus });
+                await botMessage(`Manual strike issued to @${selectedName}. Remaining: ${s}/3.`);
+                if(finalStatus === 'suspended') await botMessage(`@${selectedName} has been evicted.`);
+            } else if (type === 'suspend') {
+                await updateDoc(doc(db, "users", selectedUid), { status: 'suspended', strikes: 0 });
+                await botMessage(`@${selectedName} has been immediately suspended by administration.`);
+            } else if (type === 'delete') {
+                await botMessage(`A message from @${selectedName} was removed by admin.`);
             }
             closeMod();
         };
@@ -355,24 +424,30 @@
                     const data = d.data();
                     if(data.username === 'admin.logan') return;
                     const isSusp = data.status === 'suspended';
-                    list.innerHTML += `<tr><td><b>${data.username}</b><br><small>${data.role}</small></td><td style="color:${isSusp ? 'red' : 'green'}; font-weight:800;">${data.status.toUpperCase()}</td><td>${data.strikes}/3</td><td><span class="action-btn" onclick="setUserStatus('${d.id}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span></td></tr>`;
+                    list.innerHTML += `<tr><td><b>${data.username}</b><br><small>${data.role}</small></td><td style="color:${isSusp ? 'red' : 'green'}; font-weight:800;">${data.status.toUpperCase()}</td><td>${data.strikes}/3</td><td><span class="action-btn" onclick="setUserStatus('${d.id}', '${data.username}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span></td></tr>`;
                 });
             });
         };
 
-        window.setUserStatus = async (uid, status) => {
+        window.setUserStatus = async (uid, name, status) => {
             await updateDoc(doc(db, "users", uid), { status: status, strikes: status === 'active' ? 3 : 0 });
+            if (status === 'suspended') await botMessage(`@${name} has been suspended by administration.`);
+            else await botMessage(`@${name} has been restored to the house.`);
         };
 
         window.sendMessage = async () => {
             const v = document.getElementById('chat-input').value; if(!v) return;
             const uid = auth.currentUser.uid;
-            const username = auth.currentUser.email.split('@')[0];
-            if (isViolating(v)) {
+            const uDoc = await getDoc(doc(db, "users", uid));
+            const username = uDoc.data()?.username || auth.currentUser.email.split('@')[0];
+            const forbiddenPatterns = [/f[au*@k]/i, /sh[i*@t]/i, /b[i*@tch]/i, /n[i*@gg]/i, /p[u*@ssy]/i, /c[u*@nt]/i];
+            if (forbiddenPatterns.some(pattern => pattern.test(v))) {
                 document.getElementById('chat-input').value = '';
-                const uDoc = await getDoc(doc(db, "users", uid));
                 const s = (uDoc.data()?.strikes || 3) - 1;
-                await updateDoc(doc(db, "users", uid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
+                const finalStatus = s <= 0 ? 'suspended' : 'active';
+                await updateDoc(doc(db, "users", uid), { strikes: s, status: finalStatus });
+                await botMessage(`Blocked message from @${username}. Automated Strike issued (${s}/3).`);
+                if(finalStatus === 'suspended') await botMessage(`@${username} has been evicted.`);
                 return;
             }
             await addDoc(collection(db, "messages"), { text: v, user: username, uid: uid, time: Date.now() });
@@ -383,6 +458,7 @@
             if(confirm("NUKE ALL?")) {
                 const q = await getDocs(collection(db, "messages"));
                 q.forEach(async (d) => await deleteDoc(d.ref));
+                await botMessage("The chat history has been wiped by administration.");
             }
         };
 
