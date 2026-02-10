@@ -2,198 +2,209 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drama House | dramahouse.xyz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drama House | DH.XYZ</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-black: #000000;
             --bg-dark: #0a0a0a;
-            --bg-card: #111111;
-            --border: #222222;
+            --bg-input: #0e0e0e;
+            --border: #1a1a1a;
             --text-white: #ffffff;
-            --text-dim: #888888;
+            --text-dim: #666666;
             --accent-red: #ff3b30;
-            --accent-blue: #007aff;
-            --accent-orange: #ff9500;
-            --accent-green: #34c759;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-black); color: var(--text-white); height: 100vh; display: flex; overflow: hidden; }
+        body { background-color: var(--bg-black); color: var(--text-white); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* SUSPENSION OVERLAY - SHOWS BEFORE KICK */
+        /* SUSPENSION OVERLAY */
         #suspension-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,1);
-            z-index: 30000;
+            background: black;
+            z-index: 99999;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
-        }
-        .suspension-icon { font-size: 60px; margin-bottom: 20px; }
-
-        /* INTERNAL UI MODALS */
-        .ui-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-        .modal-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 30px;
-            border-radius: 16px;
-            width: 400px;
-            text-align: center;
+            padding: 40px;
         }
 
-        #login-screen { position: fixed; inset: 0; background: black; display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-card { width: 320px; text-align: center; }
-        .login-card h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 10px; }
+        /* LOGIN SCREEN - MATCHING YOUR IMAGE */
+        #login-screen { 
+            position: fixed; 
+            inset: 0; 
+            background: black; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 10000; 
+        }
+        .login-card { width: 90%; max-width: 380px; text-align: center; }
+        .login-card h1 { 
+            font-size: 2.5rem; 
+            font-weight: 800; 
+            margin-bottom: 30px; 
+            letter-spacing: -2px; 
+            filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055);
+        }
         
-        input { width: 100%; padding: 16px; margin: 8px 0; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 1rem; outline: none; }
-        .btn-white { width: 100%; padding: 16px; background: white; color: black; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 15px; }
-        .btn-outline { width: 100%; padding: 12px; background: transparent; color: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: 600; }
-        .btn-red { background: var(--accent-red); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; width: 100%; }
+        .input-group { display: flex; flex-direction: column; gap: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 25px; }
+        .input-group input { 
+            background: var(--bg-input); 
+            border: none; 
+            padding: 20px; 
+            color: white; 
+            font-size: 1.1rem; 
+            outline: none;
+        }
+        .input-group input:first-child { border-bottom: 1px solid var(--border); }
+        .input-group input::placeholder { color: var(--text-dim); }
 
-        #app-container { display: none; width: 100vw; height: 100vh; grid-template-columns: 240px 1fr; background: black; }
-        .sidebar { padding: 30px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
-        .logo { font-size: 1.2rem; font-weight: 800; margin-bottom: 40px; }
-        .nav-link { color: var(--text-dim); padding: 12px 16px; text-decoration: none; font-weight: 600; cursor: pointer; border-radius: 8px; }
-        .nav-link.active { color: white; background: var(--bg-card); }
+        .btn-signin { 
+            width: 100%; 
+            padding: 18px; 
+            background: white; 
+            color: black; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
 
-        .admin-ui { display: none !important; }
-        body.is-admin .admin-ui { display: flex !important; }
+        /* MAIN APP LAYOUT */
+        #mobile-header { display: none; height: 60px; border-bottom: 1px solid var(--border); padding: 0 20px; align-items: center; justify-content: space-between; }
 
-        .content-area { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; position: relative; }
-        .view { display: none; height: 100%; flex-direction: column; }
-        .view.active { display: flex; }
-
-        .chat-box { flex-grow: 1; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-dark); margin-top: 20px; overflow: hidden; }
-        #chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; position: relative; border: 1px solid var(--border); }
-        .msg-me { align-self: flex-end; background: white; color: black; }
-        .msg-them { align-self: flex-start; background: var(--bg-card); color: white; }
-        .msg-user { font-size: 0.65rem; font-weight: 800; display: block; margin-bottom: 4px; text-transform: uppercase; opacity: 0.5; }
+        #app-container { display: none; height: 100vh; grid-template-columns: 240px 1fr; }
         
-        .del-btn { position: absolute; top: 5px; right: 5px; font-size: 10px; color: var(--accent-red); cursor: pointer; display: none; background: rgba(0,0,0,0.5); border-radius: 4px; padding: 2px 5px; font-weight: 800; }
-        body.is-admin .del-btn { display: block; }
+        .sidebar { 
+            background: var(--bg-black); 
+            padding: 30px 20px; 
+            border-right: 1px solid var(--border); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+        }
+        .logo-small { font-weight: 800; font-size: 1.2rem; margin-bottom: 40px; }
+        .nav-link { 
+            color: var(--text-dim); 
+            padding: 12px 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .nav-link.active { color: white; background: #1a1a1a; }
+        .logout-link { margin-top: auto; color: #ff4d4d; font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 12px 16px; }
 
-        .chat-footer { padding: 20px; display: flex; gap: 10px; border-top: 1px solid var(--border); }
-        .card { background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        .content-area { padding: 40px; overflow-y: auto; }
+        .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 20px; text-transform: uppercase; }
+
+        /* CHAT BOX */
+        .chat-container { height: 500px; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        #chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { background: #111; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px; max-width: 80%; position: relative; }
+        .msg-user { font-size: 0.7rem; font-weight: 800; color: var(--text-dim); margin-bottom: 4px; display: block; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; color: var(--text-dim); font-size: 0.8rem; padding: 10px; border-bottom: 1px solid var(--border); }
-        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-        .status-tag { font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
-        .status-suspended { background: var(--accent-red); color: white; }
-        .status-active { background: var(--accent-green); color: black; }
+        .chat-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); }
+        .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; outline: none; }
+        .btn-send { background: white; color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-        #toast { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 12px 24px; border-radius: 50px; font-weight: 700; z-index: 20000; }
+        /* MANAGEMENT CARDS */
+        .card { background: #080808; border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        .card-label { font-size: 0.75rem; font-weight: 800; color: var(--text-dim); margin-bottom: 15px; display: block; }
+        
+        .admin-btn-red { background: #ff3b30; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; }
+        .admin-btn-white { background: white; color: black; border: none; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 49%; }
+
+        @media (max-width: 768px) {
+            #mobile-header { display: flex; }
+            #app-container { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; left: -240px; top: 60px; bottom: 0; width: 240px; z-index: 1000; transition: 0.3s; }
+            .sidebar.open { left: 0; }
+            .content-area { padding: 20px; }
+        }
+
+        #toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 12px 24px; border-radius: 50px; font-weight: 700; z-index: 30000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
     <div id="suspension-overlay">
-        <div class="suspension-icon">🚫</div>
-        <h1 style="font-weight: 800; margin-bottom: 10px;">HOUSE SUSPENSION</h1>
-        <p style="color: var(--text-dim); font-size: 1.1rem; max-width: 450px;">You have been suspended from Drama House until further notice.</p>
-        <p id="countdown-text" style="margin-top: 30px; font-weight: 800; color: var(--accent-red);">Redirecting to login in 5 seconds...</p>
+        <h1 style="font-size: 3rem; margin-bottom: 10px;">🚫</h1>
+        <h2 style="font-weight: 800; margin-bottom: 10px;">SUSPENDED</h2>
+        <p style="color: var(--text-dim); font-size: 1.1rem;">You are suspended until further notice.</p>
+        <p style="margin-top: 40px; font-weight: 800; color: var(--accent-red);">Closing session in 5 seconds...</p>
     </div>
 
-    <div id="admin-modal" class="ui-modal">
-        <div class="modal-card">
-            <h3 id="modal-title">Moderate Resident</h3>
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 15px 0;">Consequence for this message:</p>
-            <button class="btn-white" id="modal-strike-btn">Remove + Issue Strike</button>
-            <button class="btn-outline" id="modal-warn-btn">Remove + Warning Only</button>
-            <button class="btn-outline" style="color: var(--accent-red); border-color: var(--accent-red);" id="modal-del-only">Remove Message Only</button>
-            <button class="btn-outline" onclick="closeModal()" style="border:none; color: var(--text-dim);">Cancel</button>
-        </div>
+    <div id="mobile-header">
+        <div style="font-weight: 800;">DH.XYZ</div>
+        <button class="btn-outline" onclick="toggleSidebar()" style="background:transparent; border:1px solid #333; color:white; padding:5px 10px; border-radius:5px;">MENU</button>
     </div>
-
-    <div id="confirm-modal" class="ui-modal">
-        <div class="modal-card">
-            <h3 id="confirm-title">Are you sure?</h3>
-            <p id="confirm-desc" style="color: var(--text-dim); font-size: 0.85rem; margin: 15px 0;"></p>
-            <div id="confirm-input-area"></div>
-            <button class="btn-red" id="confirm-yes-btn">Confirm</button>
-            <button class="btn-outline" onclick="closeConfirm()" style="border:none; color: var(--text-dim);">Back</button>
-        </div>
-    </div>
-
-    <div id="toast"></div>
 
     <div id="login-screen">
         <div class="login-card">
             <h1>DRAMA HOUSE</h1>
-            <input type="text" id="login-user" placeholder="Username">
-            <input type="password" id="login-pass" placeholder="Password">
-            <button class="btn-white" onclick="handleLogin()">Sign In</button>
+            <div class="input-group">
+                <input type="text" id="login-user" placeholder="Username" spellcheck="false">
+                <input type="password" id="login-pass" placeholder="Password">
+            </div>
+            <button class="btn-signin" onclick="handleLogin()">Sign In</button>
         </div>
     </div>
 
     <div id="app-container">
-        <div class="sidebar">
-            <div class="logo">DH.XYZ</div>
+        <aside class="sidebar" id="sidebar">
+            <div class="logo-small">DH.XYZ</div>
             <div class="nav-link active" onclick="showTab('chat-view', this)">General Chat</div>
-            <div class="nav-link admin-ui" onclick="showTab('manager-view', this)">Management</div>
-            <div class="nav-link" onclick="handleLogout()" style="margin-top: auto; color: var(--accent-red);">Logout</div>
-        </div>
+            <div class="nav-link admin-ui" onclick="showTab('manager-view', this)" style="display:none;">Management</div>
+            <div class="logout-link" onclick="handleLogout()">Logout</div>
+        </aside>
 
-        <div class="content-area">
+        <main class="content-area">
             <div id="chat-view" class="view active">
-                <h2 style="font-weight: 800;">LIVE FEED</h2>
-                <div class="chat-box">
+                <div class="view-title">Live Feed</div>
+                <div class="chat-container">
                     <div id="chat-messages"></div>
                     <div class="chat-footer">
-                        <input type="text" id="chat-input" placeholder="Type a message...">
-                        <button class="btn-white" style="width: auto; margin:0; padding: 0 25px;" onclick="sendMessage()">Send</button>
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type a message...">
+                        <button class="btn-send" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
             </div>
 
-            <div id="manager-view" class="view">
-                <h2 style="font-weight: 800;">MANAGEMENT</h2>
+            <div id="manager-view" class="view" style="display:none;">
+                <div class="view-title">Management</div>
                 
-                <div class="card" style="margin-top: 20px;">
-                    <h4 style="margin-bottom: 15px; color: var(--text-dim);">Register New Resident</h4>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="reg-user" placeholder="Username">
-                        <input type="password" id="reg-pass" placeholder="Password">
-                        <button class="btn-white" style="margin:0; width: 200px;" onclick="createUserAccount()">Create Access</button>
+                <div class="card">
+                    <span class="card-label">USER AUTHORITY</span>
+                    <input type="text" id="target-user" placeholder="Enter target username" class="chat-input" style="width:100%; margin-bottom:15px; padding:15px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <button class="admin-btn-white" onclick="moderateUser('suspend')">Suspend</button>
+                        <button class="admin-btn-red" style="width:49%;" onclick="moderateUser('ban')">Ban User</button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h4 style="color: var(--text-dim);">Active Strike Registry</h4>
-                    <table>
-                        <thead><tr><th>Username</th><th>Strikes</th><th>Status</th><th>Actions</th></tr></thead>
-                        <tbody id="user-list-body"></tbody>
-                    </table>
-                </div>
-
-                <div class="card">
-                    <button class="btn-red" style="width: auto; padding: 12px 25px;" onclick="promptNuke()">WIPE ALL CHAT HISTORY</button>
+                    <span class="card-label">NUCLEAR CONTROLS</span>
+                    <button class="admin-btn-red" onclick="promptNuke()">DELETE ALL CHAT HISTORY</button>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
+
+    <div id="toast"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDoc, updateDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBnVxcGC5aeywDdHjM10j2mT5U08WI90OE",
@@ -208,34 +219,22 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentTargetMsgId, currentTargetUid, currentTargetName, userUnsubscribe;
+        let userUnsubscribe;
 
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
+        
         window.showToast = (msg) => {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.style.display = 'block';
+            const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block';
             setTimeout(() => t.style.display = 'none', 3000);
         };
 
-        window.closeConfirm = () => document.getElementById('confirm-modal').style.display = 'none';
-        window.closeModal = () => document.getElementById('admin-modal').style.display = 'none';
-
         window.showTab = (id, el) => {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('chat-view').style.display = 'none';
+            document.getElementById('manager-view').style.display = 'none';
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            document.getElementById(id).style.display = 'block';
             el.classList.add('active');
-        };
-
-        window.handleLogin = () => {
-            const u = document.getElementById('login-user').value.toLowerCase();
-            const p = document.getElementById('login-pass').value;
-            signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p).catch(() => showToast("Denied."));
-        };
-
-        window.handleLogout = () => {
-            if(userUnsubscribe) userUnsubscribe();
-            signOut(auth);
-            document.getElementById('suspension-overlay').style.display = 'none';
+            if(window.innerWidth <= 768) toggleSidebar();
         };
 
         onAuthStateChanged(auth, (user) => {
@@ -248,9 +247,8 @@
                     }
                 });
                 getDoc(doc(db, "users", user.uid)).then(uDoc => {
-                    if (user.email.split('@')[0] === 'admin.logan' || (uDoc.exists() && uDoc.data().role === 'admin')) {
-                        document.body.classList.add('is-admin');
-                        loadUserList();
+                    if (user.email.includes('admin.logan') || (uDoc.exists() && uDoc.data().role === 'admin')) {
+                        document.querySelectorAll('.admin-ui').forEach(el => el.style.display = 'block');
                     }
                 });
                 document.getElementById('login-screen').style.display = 'none';
@@ -262,97 +260,13 @@
             }
         });
 
-        window.openModMenu = (msgId, uid, name) => {
-            currentTargetMsgId = msgId; currentTargetUid = uid; currentTargetName = name;
-            document.getElementById('modal-title').innerText = `Moderate: ${name}`;
-            document.getElementById('admin-modal').style.display = 'flex';
+        window.handleLogin = () => {
+            const u = document.getElementById('login-user').value.toLowerCase().trim();
+            const p = document.getElementById('login-pass').value;
+            signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p).catch(() => showToast("Access Denied"));
         };
 
-        document.getElementById('modal-del-only').onclick = async () => {
-            await deleteDoc(doc(db, "messages", currentTargetMsgId)); closeModal();
-        };
-
-        document.getElementById('modal-warn-btn').onclick = async () => {
-            await deleteDoc(doc(db, "messages", currentTargetMsgId));
-            await addDoc(collection(db, "messages"), { text: "Warning: Clean it up.", user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
-            closeModal();
-        };
-
-        document.getElementById('modal-strike-btn').onclick = async () => {
-            await deleteDoc(doc(db, "messages", currentTargetMsgId));
-            const uDoc = await getDoc(doc(db, "users", currentTargetUid));
-            if(uDoc.exists()){
-                const strikes = (uDoc.data().strikes || 3) - 1;
-                if(strikes <= 0) {
-                    await updateDoc(doc(db, "users", currentTargetUid), { strikes: 0, status: 'suspended' });
-                    await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${currentTargetName} hit 0 strikes and is SUSPENDED.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
-                } else {
-                    await updateDoc(doc(db, "users", currentTargetUid), { strikes: strikes });
-                    await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${currentTargetName}, strike issued. ${strikes} left.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
-                }
-            }
-            closeModal();
-        };
-
-        window.createUserAccount = async () => {
-            const u = document.getElementById('reg-user').value.toLowerCase();
-            const p = document.getElementById('reg-pass').value;
-            try {
-                const cred = await createUserWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
-                await setDoc(doc(db, "users", cred.user.uid), { username: u, role: 'member', status: 'active', strikes: 3 });
-                showToast(`Access Granted to ${u}. Logging out...`);
-                setTimeout(() => handleLogout(), 2000);
-            } catch (e) { showToast(e.message); }
-        };
-
-        window.promptNuke = () => {
-            document.getElementById('confirm-title').innerText = "NUKE ALL CHAT?";
-            document.getElementById('confirm-desc').innerText = "This will permanently delete every single message.";
-            document.getElementById('confirm-input-area').innerHTML = "";
-            document.getElementById('confirm-modal').style.display = 'flex';
-            document.getElementById('confirm-yes-btn').onclick = async () => {
-                const q = await getDocs(collection(db, "messages"));
-                q.forEach(async (d) => await deleteDoc(d.ref));
-                closeConfirm(); showToast("Wiped.");
-            };
-        };
-
-        window.promptTimer = (id) => {
-            document.getElementById('confirm-title').innerText = "SUSPENSION TIMER";
-            document.getElementById('confirm-desc').innerText = "Minutes until they can return:";
-            document.getElementById('confirm-input-area').innerHTML = `<input type="number" id="t-mins" placeholder="60">`;
-            document.getElementById('confirm-modal').style.display = 'flex';
-            document.getElementById('confirm-yes-btn').onclick = async () => {
-                const m = document.getElementById('t-mins').value;
-                await updateDoc(doc(db, "users", id), { status: 'suspended', suspendedUntil: Date.now() + (m * 60000) });
-                closeConfirm(); showToast("Timer set.");
-            };
-        };
-
-        function loadUserList() {
-            onSnapshot(collection(db, "users"), (snap) => {
-                const list = document.getElementById('user-list-body');
-                list.innerHTML = '';
-                snap.forEach(d => {
-                    const data = d.data();
-                    if(data.username === 'admin.logan') return;
-                    list.innerHTML += `<tr>
-                        <td>${data.username}</td>
-                        <td>${data.strikes || 3} / 3</td>
-                        <td><span class="status-tag status-${data.status}">${data.status}</span></td>
-                        <td>
-                            <button class="btn-outline" style="width:auto; padding:5px 10px;" onclick="resetUser('${d.id}')">Reset</button>
-                            <button class="btn-outline" style="width:auto; padding:5px 10px;" onclick="promptTimer('${d.id}')">Timer</button>
-                        </td>
-                    </tr>`;
-                });
-            });
-        }
-
-        window.resetUser = async (id) => { 
-            await updateDoc(doc(db, "users", id), { strikes: 3, status: 'active', suspendedUntil: null }); 
-            showToast("Restored.");
-        };
+        window.handleLogout = () => { if(userUnsubscribe) userUnsubscribe(); signOut(auth); location.reload(); };
 
         function loadChat() {
             const q = query(collection(db, "messages"), orderBy("time", "asc"));
@@ -362,9 +276,8 @@
                 snap.forEach(doc => {
                     const data = doc.data();
                     const isMe = auth.currentUser && data.uid === auth.currentUser.uid;
-                    msgBox.innerHTML += `<div class="msg ${isMe ? 'msg-me' : 'msg-them'}">
+                    msgBox.innerHTML += `<div class="msg" style="${isMe ? 'align-self:flex-end; background:#222;' : ''}">
                         <span class="msg-user">${data.user}</span>
-                        <span class="del-btn" onclick="openModMenu('${doc.id}', '${data.uid}', '${data.user}')">X</span>
                         ${data.text}</div>`;
                 });
                 msgBox.scrollTop = msgBox.scrollHeight;
@@ -373,9 +286,22 @@
 
         window.sendMessage = async () => {
             const input = document.getElementById('chat-input');
-            if(!input.value) return;
-            await addDoc(collection(db, "messages"), { text: input.value, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, time: Date.now() });
+            if(!input.value.trim()) return;
+            await addDoc(collection(db, "messages"), { 
+                text: input.value, 
+                user: auth.currentUser.email.split('@')[0], 
+                uid: auth.currentUser.uid, 
+                time: Date.now() 
+            });
             input.value = '';
+        };
+
+        window.promptNuke = async () => {
+            if(confirm("Wipe all chat history?")) {
+                const q = await getDocs(collection(db, "messages"));
+                q.forEach(async (d) => await deleteDoc(d.ref));
+                showToast("Chat Nuked");
+            }
         };
     </script>
 </body>
