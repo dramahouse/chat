@@ -29,9 +29,23 @@
             overflow: hidden; 
             display: flex; 
             flex-direction: column; 
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        /* FIXED VERSION TAG - STAYS ON ALL SCREENS */
+        /* SCREENSHOT PROTECTOR OVERLAY */
+        #anti-screenshot {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 2000000;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* VERSION TAG */
         .version-tag {
             position: fixed;
             bottom: 12px;
@@ -39,7 +53,7 @@
             font-size: 11px;
             font-weight: 800;
             color: rgba(255, 255, 255, 0.5);
-            z-index: 1000000; /* Above everything */
+            z-index: 1000000;
             pointer-events: none;
             letter-spacing: 0.5px;
             text-transform: uppercase;
@@ -161,6 +175,11 @@
 </head>
 <body>
 
+    <div id="anti-screenshot">
+        <h1 style="color:white; font-weight: 900; letter-spacing: -2px;">NO SCREENSHOTS ALLOWED</h1>
+        <p style="color:red; font-weight: 800; margin-top: 10px;">1 STRIKE ON YOUR GALLERY</p>
+    </div>
+
     <div class="version-tag">V1.2.5</div>
 
     <div id="suspension-overlay">
@@ -269,6 +288,38 @@
 
         let selectedMsgId, selectedUid, selectedName, statusUnsub, isAdmin = false;
 
+        // --- SCREENSHOT DETECTION ---
+        const detector = document.getElementById('anti-screenshot');
+        
+        window.onblur = async () => {
+            if (!auth.currentUser || isAdmin) return;
+            detector.style.display = 'flex';
+            
+            // Strike the user
+            const uid = auth.currentUser.uid;
+            const uDoc = await getDoc(doc(db, "users", uid));
+            const data = uDoc.data();
+            const currentStrikes = data.strikes || 3;
+            const newStrikes = currentStrikes - 1;
+            
+            await updateDoc(doc(db, "users", uid), { 
+                strikes: newStrikes, 
+                status: newStrikes <= 0 ? 'suspended' : 'active' 
+            });
+
+            await addDoc(collection(db, "messages"), { 
+                text: `[HOUSE BOT]: @${data.username} attempted a screenshot. STRIKE ISSUED.`, 
+                user: 'HOUSE_BOT', 
+                uid: 'bot', 
+                time: Date.now() 
+            });
+        };
+
+        window.onfocus = () => {
+            setTimeout(() => { detector.style.display = 'none'; }, 1000);
+        };
+
+        // Standard App Logic
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
         window.showTab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
