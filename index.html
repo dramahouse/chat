@@ -14,10 +14,11 @@
             --text-white: #ffffff;
             --text-dim: #666666;
             --accent-red: #ff3b30;
+            --accent-blue: #007aff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-black); color: var(--text-white); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        body { background-color: var(--bg-black); color: var(--text-white); height: 100vh; overflow: hidden; display: flex; }
 
         /* SUSPENSION OVERLAY */
         #suspension-overlay {
@@ -33,126 +34,77 @@
             padding: 40px;
         }
 
-        /* LOGIN SCREEN - MATCHING YOUR IMAGE */
-        #login-screen { 
-            position: fixed; 
-            inset: 0; 
-            background: black; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 10000; 
-        }
+        /* LOGIN SCREEN */
+        #login-screen { position: fixed; inset: 0; background: black; display: flex; justify-content: center; align-items: center; z-index: 10000; }
         .login-card { width: 90%; max-width: 380px; text-align: center; }
-        .login-card h1 { 
-            font-size: 2.5rem; 
-            font-weight: 800; 
-            margin-bottom: 30px; 
-            letter-spacing: -2px; 
-            filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055);
-        }
+        .login-card h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 30px; letter-spacing: -2px; filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055); }
+        .input-group { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 25px; }
+        .input-group input, .input-group select { background: var(--bg-input); border: none; padding: 20px; color: white; font-size: 1.1rem; outline: none; border-bottom: 1px solid var(--border); }
+        .input-group select { appearance: none; color: var(--text-dim); }
+        .btn-signin { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+        /* APP LAYOUT */
+        #app-container { display: none; width: 100vw; height: 100vh; grid-template-columns: 240px 1fr; }
         
-        .input-group { display: flex; flex-direction: column; gap: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 25px; }
-        .input-group input { 
-            background: var(--bg-input); 
-            border: none; 
-            padding: 20px; 
-            color: white; 
-            font-size: 1.1rem; 
-            outline: none;
-        }
-        .input-group input:first-child { border-bottom: 1px solid var(--border); }
-        .input-group input::placeholder { color: var(--text-dim); }
-
-        .btn-signin { 
-            width: 100%; 
-            padding: 18px; 
-            background: white; 
-            color: black; 
-            border: none; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            font-size: 1rem; 
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        /* MAIN APP LAYOUT */
-        #mobile-header { display: none; height: 60px; border-bottom: 1px solid var(--border); padding: 0 20px; align-items: center; justify-content: space-between; }
-
-        #app-container { display: none; height: 100vh; grid-template-columns: 240px 1fr; }
-        
-        .sidebar { 
-            background: var(--bg-black); 
-            padding: 30px 20px; 
-            border-right: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 8px; 
-        }
+        /* SIDEBAR */
+        .sidebar { background: var(--bg-black); padding: 30px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; height: 100vh; }
         .logo-small { font-weight: 800; font-size: 1.2rem; margin-bottom: 40px; }
-        .nav-link { 
-            color: var(--text-dim); 
-            padding: 12px 16px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            border-radius: 8px; 
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
+        .nav-link { color: var(--text-dim); padding: 12px 16px; font-weight: 600; cursor: pointer; border-radius: 8px; font-size: 0.9rem; }
         .nav-link.active { color: white; background: #1a1a1a; }
         .logout-link { margin-top: auto; color: #ff4d4d; font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 12px 16px; }
 
-        .content-area { padding: 40px; overflow-y: auto; }
+        /* MAIN CONTENT AREA - STRETCHED */
+        .content-area { height: 100vh; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; }
+        .view { display: none; flex-direction: column; flex-grow: 1; height: 100%; }
+        .view.active { display: flex; }
         .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 20px; text-transform: uppercase; }
 
-        /* CHAT BOX */
-        .chat-container { height: 500px; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        /* CHAT BOX - FULL HEIGHT FIX */
+        .chat-container { flex-grow: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
         #chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .msg { background: #111; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px; max-width: 80%; position: relative; }
         .msg-user { font-size: 0.7rem; font-weight: 800; color: var(--text-dim); margin-bottom: 4px; display: block; }
+        .del-btn { position: absolute; top: 5px; right: 8px; color: var(--accent-red); cursor: pointer; font-size: 10px; font-weight: 900; display: none; }
+        body.is-admin .del-btn { display: block; }
         
         .chat-footer { padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); }
-        .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; outline: none; }
-        .btn-send { background: white; color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 15px; border-radius: 8px; color: white; outline: none; }
+        .btn-send { background: white; color: black; border: none; padding: 0 25px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-        /* MANAGEMENT CARDS */
-        .card { background: #080808; border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        /* MANAGEMENT */
+        .card { background: #080808; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .card-label { font-size: 0.75rem; font-weight: 800; color: var(--text-dim); margin-bottom: 15px; display: block; }
-        
-        .admin-btn-red { background: #ff3b30; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; }
-        .admin-btn-white { background: white; color: black; border: none; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 49%; }
+        .mgmt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; font-size: 0.7rem; color: var(--text-dim); padding: 10px; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        .btn-blue { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-red { background: var(--accent-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
         @media (max-width: 768px) {
-            #mobile-header { display: flex; }
             #app-container { grid-template-columns: 1fr; }
-            .sidebar { position: fixed; left: -240px; top: 60px; bottom: 0; width: 240px; z-index: 1000; transition: 0.3s; }
+            .sidebar { position: fixed; left: -240px; z-index: 1000; transition: 0.3s; }
             .sidebar.open { left: 0; }
             .content-area { padding: 20px; }
+            .mgmt-grid { grid-template-columns: 1fr; }
         }
 
-        #toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 12px 24px; border-radius: 50px; font-weight: 700; z-index: 30000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 12px 24px; border-radius: 50px; font-weight: 700; z-index: 30000; }
     </style>
 </head>
 <body>
 
     <div id="suspension-overlay">
-        <h1 style="font-size: 3rem; margin-bottom: 10px;">🚫</h1>
-        <h2 style="font-weight: 800; margin-bottom: 10px;">SUSPENDED</h2>
-        <p style="color: var(--text-dim); font-size: 1.1rem;">You are suspended until further notice.</p>
-        <p style="margin-top: 40px; font-weight: 800; color: var(--accent-red);">Closing session in 5 seconds...</p>
-    </div>
-
-    <div id="mobile-header">
-        <div style="font-weight: 800;">DH.XYZ</div>
-        <button class="btn-outline" onclick="toggleSidebar()" style="background:transparent; border:1px solid #333; color:white; padding:5px 10px; border-radius:5px;">MENU</button>
+        <h1 style="font-size: 3rem;">🚫</h1>
+        <h2 style="font-weight: 800;">SUSPENDED</h2>
+        <p style="color: var(--text-dim);">Access revoked until further notice.</p>
     </div>
 
     <div id="login-screen">
         <div class="login-card">
             <h1>DRAMA HOUSE</h1>
             <div class="input-group">
-                <input type="text" id="login-user" placeholder="Username" spellcheck="false">
+                <input type="text" id="login-user" placeholder="Username">
                 <input type="password" id="login-pass" placeholder="Password">
             </div>
             <button class="btn-signin" onclick="handleLogin()">Sign In</button>
@@ -163,7 +115,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="logo-small">DH.XYZ</div>
             <div class="nav-link active" onclick="showTab('chat-view', this)">General Chat</div>
-            <div class="nav-link admin-ui" onclick="showTab('manager-view', this)" style="display:none;">Management</div>
+            <div class="nav-link admin-ui" style="display:none;" onclick="showTab('manager-view', this)">Management</div>
             <div class="logout-link" onclick="handleLogout()">Logout</div>
         </aside>
 
@@ -179,21 +131,34 @@
                 </div>
             </div>
 
-            <div id="manager-view" class="view" style="display:none;">
+            <div id="manager-view" class="view">
                 <div class="view-title">Management</div>
                 
-                <div class="card">
-                    <span class="card-label">USER AUTHORITY</span>
-                    <input type="text" id="target-user" placeholder="Enter target username" class="chat-input" style="width:100%; margin-bottom:15px; padding:15px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <button class="admin-btn-white" onclick="moderateUser('suspend')">Suspend</button>
-                        <button class="admin-btn-red" style="width:49%;" onclick="moderateUser('ban')">Ban User</button>
+                <div class="mgmt-grid">
+                    <div class="card">
+                        <span class="card-label">ADD NEW RESIDENT</span>
+                        <input type="text" id="reg-user" placeholder="Username" class="chat-input" style="width:100%; margin-bottom:10px;">
+                        <input type="password" id="reg-pass" placeholder="Password" class="chat-input" style="width:100%; margin-bottom:10px;">
+                        <select id="reg-role" class="chat-input" style="width:100%; margin-bottom:15px; background:#0e0e0e;">
+                            <option value="member">Member</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <button class="btn-blue" onclick="registerUser()">Register Account</button>
+                    </div>
+
+                    <div class="card">
+                        <span class="card-label">DANGER ZONE</span>
+                        <button class="btn-red" onclick="promptNuke()">NUKE CHAT HISTORY</button>
+                        <p style="color:var(--text-dim); font-size:0.7rem; margin-top:10px;">Warning: This deletes every single message permanently.</p>
                     </div>
                 </div>
 
                 <div class="card">
-                    <span class="card-label">NUCLEAR CONTROLS</span>
-                    <button class="admin-btn-red" onclick="promptNuke()">DELETE ALL CHAT HISTORY</button>
+                    <span class="card-label">ACTIVE RESIDENTS</span>
+                    <table>
+                        <thead><tr><th>Username</th><th>Role</th><th>Strikes</th><th>Action</th></tr></thead>
+                        <tbody id="user-list-body"></tbody>
+                    </table>
                 </div>
             </div>
         </main>
@@ -203,8 +168,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDoc, updateDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBnVxcGC5aeywDdHjM10j2mT5U08WI90OE",
@@ -221,20 +186,16 @@
 
         let userUnsubscribe;
 
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
-        
         window.showToast = (msg) => {
             const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block';
             setTimeout(() => t.style.display = 'none', 3000);
         };
 
         window.showTab = (id, el) => {
-            document.getElementById('chat-view').style.display = 'none';
-            document.getElementById('manager-view').style.display = 'none';
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).style.display = 'block';
+            document.getElementById(id).classList.add('active');
             el.classList.add('active');
-            if(window.innerWidth <= 768) toggleSidebar();
         };
 
         onAuthStateChanged(auth, (user) => {
@@ -243,12 +204,14 @@
                     const data = snapshot.data();
                     if (data && data.status === 'suspended') {
                         document.getElementById('suspension-overlay').style.display = 'flex';
-                        setTimeout(() => handleLogout(), 5000);
+                        setTimeout(() => handleLogout(), 4000);
                     }
                 });
                 getDoc(doc(db, "users", user.uid)).then(uDoc => {
                     if (user.email.includes('admin.logan') || (uDoc.exists() && uDoc.data().role === 'admin')) {
+                        document.body.classList.add('is-admin');
                         document.querySelectorAll('.admin-ui').forEach(el => el.style.display = 'block');
+                        loadUserList();
                     }
                 });
                 document.getElementById('login-screen').style.display = 'none';
@@ -273,11 +236,12 @@
             onSnapshot(q, (snap) => {
                 const msgBox = document.getElementById('chat-messages');
                 msgBox.innerHTML = '';
-                snap.forEach(doc => {
-                    const data = doc.data();
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
                     const isMe = auth.currentUser && data.uid === auth.currentUser.uid;
                     msgBox.innerHTML += `<div class="msg" style="${isMe ? 'align-self:flex-end; background:#222;' : ''}">
                         <span class="msg-user">${data.user}</span>
+                        <span class="del-btn" onclick="deleteMessage('${docSnap.id}')">X</span>
                         ${data.text}</div>`;
                 });
                 msgBox.scrollTop = msgBox.scrollHeight;
@@ -287,20 +251,55 @@
         window.sendMessage = async () => {
             const input = document.getElementById('chat-input');
             if(!input.value.trim()) return;
-            await addDoc(collection(db, "messages"), { 
-                text: input.value, 
-                user: auth.currentUser.email.split('@')[0], 
-                uid: auth.currentUser.uid, 
-                time: Date.now() 
-            });
+            await addDoc(collection(db, "messages"), { text: input.value, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, time: Date.now() });
             input.value = '';
         };
 
+        window.deleteMessage = async (id) => { await deleteDoc(doc(db, "messages", id)); };
+
+        window.registerUser = async () => {
+            const u = document.getElementById('reg-user').value.toLowerCase().trim();
+            const p = document.getElementById('reg-pass').value;
+            const r = document.getElementById('reg-role').value;
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
+                await setDoc(doc(db, "users", cred.user.uid), { username: u, role: r, status: 'active', strikes: 3 });
+                showToast("Resident Registered");
+            } catch (e) { showToast("Error adding user"); }
+        };
+
+        window.loadUserList = () => {
+            onSnapshot(collection(db, "users"), (snap) => {
+                const list = document.getElementById('user-list-body');
+                list.innerHTML = '';
+                snap.forEach(d => {
+                    const data = d.data();
+                    if(data.username === 'admin.logan') return;
+                    list.innerHTML += `<tr>
+                        <td>${data.username}</td>
+                        <td style="text-transform:uppercase; font-weight:800; font-size:0.7rem;">${data.role}</td>
+                        <td>${data.strikes || 0}/3</td>
+                        <td>
+                            <span style="color:var(--accent-red); cursor:pointer; font-weight:800;" onclick="removeUser('${d.id}')">Remove</span> | 
+                            <span style="color:var(--accent-blue); cursor:pointer; font-weight:800;" onclick="issueStrike('${d.id}')">Strike</span>
+                        </td>
+                    </tr>`;
+                });
+            });
+        };
+
+        window.issueStrike = async (id) => {
+            const uDoc = await getDoc(doc(db, "users", id));
+            const newStrikes = (uDoc.data().strikes || 3) - 1;
+            await updateDoc(doc(db, "users", id), { strikes: newStrikes, status: newStrikes <= 0 ? 'suspended' : 'active' });
+        };
+
+        window.removeUser = async (id) => { if(confirm("Remove resident?")) await updateDoc(doc(db, "users", id), { status: 'suspended' }); };
+
         window.promptNuke = async () => {
-            if(confirm("Wipe all chat history?")) {
+            if(confirm("WIPE ALL HISTORY?")) {
                 const q = await getDocs(collection(db, "messages"));
                 q.forEach(async (d) => await deleteDoc(d.ref));
-                showToast("Chat Nuked");
             }
         };
     </script>
