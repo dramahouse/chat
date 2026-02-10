@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drama House | dramahouse.xyz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #000000;
+            --bg-dark: #0a0a0a;
+            --bg-card: #111111;
+            --border: #222222;
+            --text-white: #ffffff;
+            --text-dim: #888888;
+            --accent-red: #ff3b30;
+            --accent-blue: #007aff;
+            --accent-orange: #ff9500;
+            --accent-green: #34c759;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-black); color: var(--text-white); height: 100vh; display: flex; overflow: hidden; }
+
+        /* SUSPENSION OVERLAY - SHOWS BEFORE KICK */
+        #suspension-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,1);
+            z-index: 30000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .suspension-icon { font-size: 60px; margin-bottom: 20px; }
+
+        /* INTERNAL UI MODALS */
+        .ui-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 16px;
+            width: 400px;
+            text-align: center;
+        }
+
+        #login-screen { position: fixed; inset: 0; background: black; display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-card { width: 320px; text-align: center; }
+        .login-card h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 10px; }
+        
+        input { width: 100%; padding: 16px; margin: 8px 0; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 1rem; outline: none; }
+        .btn-white { width: 100%; padding: 16px; background: white; color: black; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+        .btn-outline { width: 100%; padding: 12px; background: transparent; color: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: 600; }
+        .btn-red { background: var(--accent-red); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; width: 100%; }
+
+        #app-container { display: none; width: 100vw; height: 100vh; grid-template-columns: 240px 1fr; background: black; }
+        .sidebar { padding: 30px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+        .logo { font-size: 1.2rem; font-weight: 800; margin-bottom: 40px; }
+        .nav-link { color: var(--text-dim); padding: 12px 16px; text-decoration: none; font-weight: 600; cursor: pointer; border-radius: 8px; }
+        .nav-link.active { color: white; background: var(--bg-card); }
+
+        .admin-ui { display: none !important; }
+        body.is-admin .admin-ui { display: flex !important; }
+
+        .content-area { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; position: relative; }
+        .view { display: none; height: 100%; flex-direction: column; }
+        .view.active { display: flex; }
+
+        .chat-box { flex-grow: 1; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-dark); margin-top: 20px; overflow: hidden; }
+        #chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; position: relative; border: 1px solid var(--border); }
+        .msg-me { align-self: flex-end; background: white; color: black; }
+        .msg-them { align-self: flex-start; background: var(--bg-card); color: white; }
+        .msg-user { font-size: 0.65rem; font-weight: 800; display: block; margin-bottom: 4px; text-transform: uppercase; opacity: 0.5; }
+        
+        .del-btn { position: absolute; top: 5px; right: 5px; font-size: 10px; color: var(--accent-red); cursor: pointer; display: none; background: rgba(0,0,0,0.5); border-radius: 4px; padding: 2px 5px; font-weight: 800; }
+        body.is-admin .del-btn { display: block; }
+
+        .chat-footer { padding: 20px; display: flex; gap: 10px; border-top: 1px solid var(--border); }
+        .card { background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; color: var(--text-dim); font-size: 0.8rem; padding: 10px; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .status-tag { font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+        .status-suspended { background: var(--accent-red); color: white; }
+        .status-active { background: var(--accent-green); color: black; }
+
+        #toast { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 12px 24px; border-radius: 50px; font-weight: 700; z-index: 20000; }
+    </style>
+</head>
+<body>
+
+    <div id="suspension-overlay">
+        <div class="suspension-icon">🚫</div>
+        <h1 style="font-weight: 800; margin-bottom: 10px;">HOUSE SUSPENSION</h1>
+        <p style="color: var(--text-dim); font-size: 1.1rem; max-width: 450px;">You have been suspended from Drama House until further notice.</p>
+        <p id="countdown-text" style="margin-top: 30px; font-weight: 800; color: var(--accent-red);">Redirecting to login in 5 seconds...</p>
+    </div>
+
+    <div id="admin-modal" class="ui-modal">
+        <div class="modal-card">
+            <h3 id="modal-title">Moderate Resident</h3>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 15px 0;">Consequence for this message:</p>
+            <button class="btn-white" id="modal-strike-btn">Remove + Issue Strike</button>
+            <button class="btn-outline" id="modal-warn-btn">Remove + Warning Only</button>
+            <button class="btn-outline" style="color: var(--accent-red); border-color: var(--accent-red);" id="modal-del-only">Remove Message Only</button>
+            <button class="btn-outline" onclick="closeModal()" style="border:none; color: var(--text-dim);">Cancel</button>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="ui-modal">
+        <div class="modal-card">
+            <h3 id="confirm-title">Are you sure?</h3>
+            <p id="confirm-desc" style="color: var(--text-dim); font-size: 0.85rem; margin: 15px 0;"></p>
+            <div id="confirm-input-area"></div>
+            <button class="btn-red" id="confirm-yes-btn">Confirm</button>
+            <button class="btn-outline" onclick="closeConfirm()" style="border:none; color: var(--text-dim);">Back</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <div id="login-screen">
+        <div class="login-card">
+            <h1>DRAMA HOUSE</h1>
+            <input type="text" id="login-user" placeholder="Username">
+            <input type="password" id="login-pass" placeholder="Password">
+            <button class="btn-white" onclick="handleLogin()">Sign In</button>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <div class="sidebar">
+            <div class="logo">DH.XYZ</div>
+            <div class="nav-link active" onclick="showTab('chat-view', this)">General Chat</div>
+            <div class="nav-link admin-ui" onclick="showTab('manager-view', this)">Management</div>
+            <div class="nav-link" onclick="handleLogout()" style="margin-top: auto; color: var(--accent-red);">Logout</div>
+        </div>
+
+        <div class="content-area">
+            <div id="chat-view" class="view active">
+                <h2 style="font-weight: 800;">LIVE FEED</h2>
+                <div class="chat-box">
+                    <div id="chat-messages"></div>
+                    <div class="chat-footer">
+                        <input type="text" id="chat-input" placeholder="Type a message...">
+                        <button class="btn-white" style="width: auto; margin:0; padding: 0 25px;" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="manager-view" class="view">
+                <h2 style="font-weight: 800;">MANAGEMENT</h2>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 15px; color: var(--text-dim);">Register New Resident</h4>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="reg-user" placeholder="Username">
+                        <input type="password" id="reg-pass" placeholder="Password">
+                        <button class="btn-white" style="margin:0; width: 200px;" onclick="createUserAccount()">Create Access</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 style="color: var(--text-dim);">Active Strike Registry</h4>
+                    <table>
+                        <thead><tr><th>Username</th><th>Strikes</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="user-list-body"></tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <button class="btn-red" style="width: auto; padding: 12px 25px;" onclick="promptNuke()">WIPE ALL CHAT HISTORY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDoc, updateDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBnVxcGC5aeywDdHjM10j2mT5U08WI90OE",
+            authDomain: "drama-house-gc.firebaseapp.com",
+            projectId: "drama-house-gc",
+            storageBucket: "drama-house-gc.firebasestorage.app",
+            messagingSenderId: "5031530732",
+            appId: "1:5031530732:web:a7626b4b9039d4b25c15c9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentTargetMsgId, currentTargetUid, currentTargetName, userUnsubscribe;
+
+        window.showToast = (msg) => {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        };
+
+        window.closeConfirm = () => document.getElementById('confirm-modal').style.display = 'none';
+        window.closeModal = () => document.getElementById('admin-modal').style.display = 'none';
+
+        window.showTab = (id, el) => {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+        };
+
+        window.handleLogin = () => {
+            const u = document.getElementById('login-user').value.toLowerCase();
+            const p = document.getElementById('login-pass').value;
+            signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p).catch(() => showToast("Denied."));
+        };
+
+        window.handleLogout = () => {
+            if(userUnsubscribe) userUnsubscribe();
+            signOut(auth);
+            document.getElementById('suspension-overlay').style.display = 'none';
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userUnsubscribe = onSnapshot(doc(db, "users", user.uid), (snapshot) => {
+                    const data = snapshot.data();
+                    if (data && data.status === 'suspended') {
+                        document.getElementById('suspension-overlay').style.display = 'flex';
+                        setTimeout(() => handleLogout(), 5000);
+                    }
+                });
+                getDoc(doc(db, "users", user.uid)).then(uDoc => {
+                    if (user.email.split('@')[0] === 'admin.logan' || (uDoc.exists() && uDoc.data().role === 'admin')) {
+                        document.body.classList.add('is-admin');
+                        loadUserList();
+                    }
+                });
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'grid';
+                loadChat();
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('app-container').style.display = 'none';
+            }
+        });
+
+        window.openModMenu = (msgId, uid, name) => {
+            currentTargetMsgId = msgId; currentTargetUid = uid; currentTargetName = name;
+            document.getElementById('modal-title').innerText = `Moderate: ${name}`;
+            document.getElementById('admin-modal').style.display = 'flex';
+        };
+
+        document.getElementById('modal-del-only').onclick = async () => {
+            await deleteDoc(doc(db, "messages", currentTargetMsgId)); closeModal();
+        };
+
+        document.getElementById('modal-warn-btn').onclick = async () => {
+            await deleteDoc(doc(db, "messages", currentTargetMsgId));
+            await addDoc(collection(db, "messages"), { text: "Warning: Clean it up.", user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
+            closeModal();
+        };
+
+        document.getElementById('modal-strike-btn').onclick = async () => {
+            await deleteDoc(doc(db, "messages", currentTargetMsgId));
+            const uDoc = await getDoc(doc(db, "users", currentTargetUid));
+            if(uDoc.exists()){
+                const strikes = (uDoc.data().strikes || 3) - 1;
+                if(strikes <= 0) {
+                    await updateDoc(doc(db, "users", currentTargetUid), { strikes: 0, status: 'suspended' });
+                    await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${currentTargetName} hit 0 strikes and is SUSPENDED.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
+                } else {
+                    await updateDoc(doc(db, "users", currentTargetUid), { strikes: strikes });
+                    await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${currentTargetName}, strike issued. ${strikes} left.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
+                }
+            }
+            closeModal();
+        };
+
+        window.createUserAccount = async () => {
+            const u = document.getElementById('reg-user').value.toLowerCase();
+            const p = document.getElementById('reg-pass').value;
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
+                await setDoc(doc(db, "users", cred.user.uid), { username: u, role: 'member', status: 'active', strikes: 3 });
+                showToast(`Access Granted to ${u}. Logging out...`);
+                setTimeout(() => handleLogout(), 2000);
+            } catch (e) { showToast(e.message); }
+        };
+
+        window.promptNuke = () => {
+            document.getElementById('confirm-title').innerText = "NUKE ALL CHAT?";
+            document.getElementById('confirm-desc').innerText = "This will permanently delete every single message.";
+            document.getElementById('confirm-input-area').innerHTML = "";
+            document.getElementById('confirm-modal').style.display = 'flex';
+            document.getElementById('confirm-yes-btn').onclick = async () => {
+                const q = await getDocs(collection(db, "messages"));
+                q.forEach(async (d) => await deleteDoc(d.ref));
+                closeConfirm(); showToast("Wiped.");
+            };
+        };
+
+        window.promptTimer = (id) => {
+            document.getElementById('confirm-title').innerText = "SUSPENSION TIMER";
+            document.getElementById('confirm-desc').innerText = "Minutes until they can return:";
+            document.getElementById('confirm-input-area').innerHTML = `<input type="number" id="t-mins" placeholder="60">`;
+            document.getElementById('confirm-modal').style.display = 'flex';
+            document.getElementById('confirm-yes-btn').onclick = async () => {
+                const m = document.getElementById('t-mins').value;
+                await updateDoc(doc(db, "users", id), { status: 'suspended', suspendedUntil: Date.now() + (m * 60000) });
+                closeConfirm(); showToast("Timer set.");
+            };
+        };
+
+        function loadUserList() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                const list = document.getElementById('user-list-body');
+                list.innerHTML = '';
+                snap.forEach(d => {
+                    const data = d.data();
+                    if(data.username === 'admin.logan') return;
+                    list.innerHTML += `<tr>
+                        <td>${data.username}</td>
+                        <td>${data.strikes || 3} / 3</td>
+                        <td><span class="status-tag status-${data.status}">${data.status}</span></td>
+                        <td>
+                            <button class="btn-outline" style="width:auto; padding:5px 10px;" onclick="resetUser('${d.id}')">Reset</button>
+                            <button class="btn-outline" style="width:auto; padding:5px 10px;" onclick="promptTimer('${d.id}')">Timer</button>
+                        </td>
+                    </tr>`;
+                });
+            });
+        }
+
+        window.resetUser = async (id) => { 
+            await updateDoc(doc(db, "users", id), { strikes: 3, status: 'active', suspendedUntil: null }); 
+            showToast("Restored.");
+        };
+
+        function loadChat() {
+            const q = query(collection(db, "messages"), orderBy("time", "asc"));
+            onSnapshot(q, (snap) => {
+                const msgBox = document.getElementById('chat-messages');
+                msgBox.innerHTML = '';
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    const isMe = auth.currentUser && data.uid === auth.currentUser.uid;
+                    msgBox.innerHTML += `<div class="msg ${isMe ? 'msg-me' : 'msg-them'}">
+                        <span class="msg-user">${data.user}</span>
+                        <span class="del-btn" onclick="openModMenu('${doc.id}', '${data.uid}', '${data.user}')">X</span>
+                        ${data.text}</div>`;
+                });
+                msgBox.scrollTop = msgBox.scrollHeight;
+            });
+        }
+
+        window.sendMessage = async () => {
+            const input = document.getElementById('chat-input');
+            if(!input.value) return;
+            await addDoc(collection(db, "messages"), { text: input.value, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, time: Date.now() });
+            input.value = '';
+        };
+    </script>
+</body>
+</html>
