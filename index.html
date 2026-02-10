@@ -28,21 +28,6 @@
             overflow: hidden; 
             display: flex; 
             flex-direction: column; 
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        /* ULTIMATE BLACKOUT LAYER */
-        #anti-screenshot {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #000 !important;
-            z-index: 2147483647;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
         }
 
         .version-tag {
@@ -51,11 +36,9 @@
             right: 15px;
             font-size: 11px;
             font-weight: 800;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.4);
             z-index: 1000000;
             pointer-events: none;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
         }
 
         #suspension-overlay {
@@ -83,11 +66,18 @@
             padding-top: env(safe-area-inset-top);
         }
 
+        /* LOGIN DESIGN */
         #login-screen { position: fixed; inset: 0; background: black; display: flex; justify-content: center; align-items: center; z-index: 10000; }
         .login-card { width: 90%; max-width: 380px; text-align: center; }
-        .login-card h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 30px; letter-spacing: -2px; filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055); }
+        .login-card h1 { 
+            font-size: 2.5rem; 
+            font-weight: 800; 
+            margin-bottom: 30px; 
+            letter-spacing: -2px; 
+            filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055);
+        }
         .input-group { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 25px; }
-        .input-group input, .input-group select { background: var(--bg-input); border: none; padding: 20px; color: white; font-size: 1.1rem; outline: none; border-bottom: 1px solid var(--border); }
+        .input-group input { background: var(--bg-input); border: none; padding: 20px; color: white; font-size: 1.1rem; outline: none; border-bottom: 1px solid var(--border); }
         .btn-signin { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
         #app-container { display: none; flex: 1; height: 100%; overflow: hidden; position: relative; }
@@ -101,10 +91,8 @@
             flex-direction: column; 
             gap: 8px; 
             height: 100%;
-            z-index: 1002;
             transition: transform 0.3s ease;
         }
-        .logo-small { font-weight: 800; font-size: 1.2rem; margin-bottom: 40px; }
         .nav-link { color: var(--text-dim); padding: 12px 16px; font-weight: 600; cursor: pointer; border-radius: 8px; font-size: 0.9rem; }
         .nav-link.active { color: white; background: #1a1a1a; }
         .logout-link { margin-top: auto; color: #ff4d4d; font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 12px 16px; }
@@ -114,8 +102,9 @@
         .view.active { display: flex; }
         .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 15px; text-transform: uppercase; }
 
+        /* CHAT */
         .chat-container { flex: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
+        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         
         .msg-wrapper { display: flex; flex-direction: column; width: 100%; }
         .msg { 
@@ -123,60 +112,50 @@
             border: 1px solid var(--border); 
             padding: 10px 14px; 
             border-radius: 12px; 
-            max-width: fit-content; 
-            min-width: 60px;
+            max-width: 85%; 
             position: relative; 
-            word-wrap: break-word; 
             align-self: flex-start;
+            word-wrap: break-word;
         }
         .msg.me { align-self: flex-end; background: #222; }
-        .msg.bot { align-self: center; background: transparent; border: none; color: var(--accent-red); font-weight: 800; text-align: center; max-width: 90%; font-size: 0.75rem; }
         
         .msg-user { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); margin-bottom: 3px; display: block; text-transform: lowercase; }
-        .del-btn { position: absolute; top: -8px; right: -8px; color: var(--accent-red); cursor: pointer; font-size: 14px; font-weight: 900; display: none; background: black; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 18px; border: 1px solid var(--border); }
+        .del-btn { position: absolute; top: -8px; right: -8px; color: var(--accent-red); cursor: pointer; background: black; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 18px; border: 1px solid var(--border); display: none; font-weight: 900; }
         body.is-admin .del-btn { display: block; }
         
         .chat-footer { padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--border); background: var(--bg-black); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 14px; border-radius: 8px; color: white; outline: none; font-size: 16px; }
-        .btn-send { background: white; color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
+        /* MANAGEMENT */
         #mod-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; justify-content: center; align-items: center; }
         .modal-card { background: #0a0a0a; border: 1px solid var(--border); padding: 30px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; }
 
         .mgmt-scroll { flex: 1; overflow-y: auto; }
         .card { background: #080808; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .card-label { font-size: 0.75rem; font-weight: 800; color: var(--text-dim); margin-bottom: 15px; display: block; }
-        .mgmt-table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 450px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { text-align: left; color: var(--text-dim); font-size: 0.7rem; padding: 10px; border-bottom: 1px solid var(--border); }
-        td { padding: 15px 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        
         .action-btn { font-size: 0.65rem; font-weight: 800; padding: 6px 10px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); text-transform: uppercase; }
-        .btn-suspend { color: var(--accent-red); border-color: var(--accent-red); }
-        .btn-unsuspend { color: var(--accent-green); border-color: var(--accent-green); }
         .btn-blue-fill { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
         .btn-red-fill { background: var(--accent-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
         @media (max-width: 768px) {
             #mobile-nav { display: flex; }
-            .sidebar { position: absolute; left: -240px; top: 0; bottom: 0; }
+            .sidebar { position: absolute; left: -240px; top:0; bottom:0; z-index: 2000; }
             .sidebar.open { transform: translateX(240px); }
-            .content-area { width: 100vw; }
         }
     </style>
 </head>
 <body>
 
-    <div id="anti-screenshot">
-        <h1 style="color:white; font-weight: 900; letter-spacing: -2px; font-size: 2.5rem;">NO SCREENSHOTS ALLOWED</h1>
-        <p style="color:red; font-weight: 800; margin-top: 15px; font-size: 1.2rem;">1 STRIKE ON YOUR GALLERY</p>
-    </div>
-
-    <div class="version-tag">V1.3.0</div>
+    <div class="version-tag">V1.3.7</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
-        <h2 style="font-weight: 800; font-size: 2rem;">ACCOUNT SUSPENDED</h2>
-        <p style="color: var(--text-dim); margin-top: 10px;">Contact Logan to appeal.</p>
+        <h2 style="font-weight: 800;">ACCOUNT SUSPENDED</h2>
         <button class="btn-signin" style="width: 200px; margin-top: 40px;" onclick="location.reload()">Refresh Status</button>
     </div>
 
@@ -184,15 +163,14 @@
         <div class="modal-card">
             <h3 id="mod-user-title" style="margin-bottom: 20px;">Moderate</h3>
             <button class="btn-red-fill" onclick="modAction('strike')" style="margin-bottom:10px;">Strike Resident</button>
-            <button class="btn-signin" onclick="modAction('warn')" style="margin-bottom:10px; background: transparent; border: 1px solid #333; color: white;">Public Warning</button>
-            <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Delete Message Only</button>
+            <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Delete Message</button>
             <button onclick="closeMod()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; margin-top:15px; font-weight: 800;">CANCEL</button>
         </div>
     </div>
 
     <header id="mobile-nav">
         <div style="font-weight: 800;">DH.XYZ</div>
-        <button onclick="toggleSidebar()" style="background:white; color:black; border:none; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.75rem;">MENU</button>
+        <button onclick="toggleSidebar()" style="background:white; color:black; border:none; padding:8px 16px; border-radius:8px; font-weight:800;">MENU</button>
     </header>
 
     <div id="login-screen">
@@ -202,13 +180,13 @@
                 <input type="text" id="login-user" placeholder="Username" autocomplete="off">
                 <input type="password" id="login-pass" placeholder="Password">
             </div>
-            <button class="btn-signin" id="login-btn" onclick="handleLogin()">Sign In</button>
+            <button class="btn-signin" onclick="handleLogin()">Sign In</button>
         </div>
     </div>
 
     <div id="app-container">
         <aside class="sidebar" id="sidebar">
-            <div class="logo-small">DH.XYZ</div>
+            <div style="font-weight: 800; font-size: 1.2rem; margin-bottom: 40px;">DH.XYZ</div>
             <div class="nav-link active" onclick="showTab('chat-view', this)">General Chat</div>
             <div class="nav-link admin-ui" style="display:none;" onclick="showTab('manager-view', this)">Management</div>
             <div class="logout-link" onclick="handleLogout()">Logout</div>
@@ -221,7 +199,7 @@
                     <div id="chat-messages"></div>
                     <div class="chat-footer">
                         <input type="text" id="chat-input" class="chat-input" placeholder="Message...">
-                        <button class="btn-send" onclick="sendMessage()">Send</button>
+                        <button class="btn-signin" style="width: 80px; padding: 12px;" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
             </div>
@@ -233,7 +211,7 @@
                         <span class="card-label">ADD RESIDENT</span>
                         <input type="text" id="reg-user" placeholder="Username" class="chat-input" style="width:100%; margin-bottom:10px;">
                         <input type="password" id="reg-pass" placeholder="Password" class="chat-input" style="width:100%; margin-bottom:10px;">
-                        <select id="reg-role" class="chat-input" style="width:100%; margin-bottom:15px; background:#0e0e0e; color:white;">
+                        <select id="reg-role" class="chat-input" style="width:100%; margin-bottom:15px; background: var(--bg-input); color: white;">
                             <option value="member">Member</option>
                             <option value="admin">Admin</option>
                         </select>
@@ -242,7 +220,7 @@
 
                     <div class="card">
                         <span class="card-label">RESIDENT REGISTRY</span>
-                        <div class="mgmt-table-container">
+                        <div style="overflow-x:auto;">
                             <table>
                                 <thead><tr><th>User</th><th>Status</th><th>Strikes</th><th>Action</th></tr></thead>
                                 <tbody id="user-list-body"></tbody>
@@ -277,70 +255,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let selectedMsgId, selectedUid, selectedName, statusUnsub, isAdmin = false;
-
-        // --- SENTINEL V3 PRE-EMPTIVE DETECTION ---
-        const detector = document.getElementById('anti-screenshot');
-        let strikeCooldown = false;
-
-        const executeStrike = async (method = "Capture Attempt") => {
-            if (!auth.currentUser || strikeCooldown) return;
-            strikeCooldown = true;
-            
-            detector.style.display = 'flex';
-            
-            const uid = auth.currentUser.uid;
-            const uDoc = await getDoc(doc(db, "users", uid));
-            const uData = uDoc.data();
-            const name = uData.username || "Unknown";
-
-            await addDoc(collection(db, "messages"), { 
-                text: `[HOUSE BOT]: @${name} triggered defense (${method}). Strike Issued.`, 
-                user: 'HOUSE_BOT', uid: 'bot', time: Date.now() 
-            });
-
-            if (!isAdmin) {
-                const s = (uData.strikes || 3) - 1;
-                await updateDoc(doc(db, "users", uid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
-            }
-
-            setTimeout(() => { strikeCooldown = false; }, 3000);
-        };
-
-        // 1. PRE-EMPTIVE KEY CAPTURE (Win+Shift / Cmd+Shift)
-        window.addEventListener('keydown', (e) => {
-            // If Windows/Cmd AND Shift are both down, blackout NOW.
-            if ((e.metaKey || e.osKey) && e.shiftKey) {
-                executeStrike("Shortcut Pre-empted");
-            }
-            if (e.key === 'PrintScreen') {
-                executeStrike("PrintScreen Pressed");
-            }
-        });
-
-        // 2. ULTRA-SENSITIVE HEARTBEAT
-        let lastTime = Date.now();
-        setInterval(() => {
-            let currentTime = Date.now();
-            if (currentTime - lastTime > 55) { executeStrike("System Interruption"); }
-            lastTime = currentTime;
-        }, 25);
-
-        // 3. FOCUS LOSS
-        window.addEventListener('blur', () => executeStrike("Focus Lost"));
-        document.addEventListener('visibilitychange', () => { if (document.hidden) executeStrike("App Hidden"); });
-
-        window.onfocus = () => { setTimeout(() => { detector.style.display = 'none'; }, 2000); };
-
-        // Standard App Logic
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
-        window.showTab = (id, el) => {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            el.classList.add('active');
-            if(window.innerWidth <= 768) toggleSidebar();
-        };
+        let selectedMsgId, selectedUid, selectedName, isAdmin = false;
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -348,14 +263,8 @@
                 if (uDoc.exists() && uDoc.data().status === 'suspended') {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('suspension-overlay').style.display = 'flex';
-                    return; 
+                    return;
                 }
-                statusUnsub = onSnapshot(doc(db, "users", user.uid), (s) => {
-                    if (s.data()?.status === 'suspended') {
-                        document.getElementById('app-container').style.display = 'none';
-                        document.getElementById('suspension-overlay').style.display = 'flex';
-                    }
-                });
                 isAdmin = user.email.includes('admin.logan') || uDoc.data()?.role === 'admin';
                 if (isAdmin) {
                     document.body.classList.add('is-admin');
@@ -377,7 +286,7 @@
             try { await signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p); } catch (e) { alert("Access Denied."); }
         };
 
-        window.handleLogout = () => { if(statusUnsub) statusUnsub(); signOut(auth); location.reload(); };
+        window.handleLogout = () => signOut(auth).then(() => location.reload());
 
         function loadChat() {
             const q = query(collection(db, "messages"), orderBy("time", "asc"));
@@ -386,13 +295,13 @@
                 msgBox.innerHTML = '';
                 snap.forEach(docSnap => {
                     const data = docSnap.data();
-                    const isBot = data.uid === 'bot';
                     const isMe = auth.currentUser?.uid === data.uid;
                     const delHtml = isAdmin ? `<span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">×</span>` : '';
+                    
                     msgBox.innerHTML += `
                         <div class="msg-wrapper">
-                            <div class="msg ${isMe ? 'me' : ''} ${isBot ? 'bot' : ''}">
-                                ${isBot ? '' : `<span class="msg-user">${data.user}</span>`}
+                            <div class="msg ${isMe ? 'me' : ''}">
+                                <span class="msg-user">${data.user}</span>
                                 ${delHtml}
                                 ${data.text}
                             </div>
@@ -403,7 +312,7 @@
         }
 
         window.openMod = (mid, uid, name) => {
-            if(!isAdmin || uid === 'bot') return;
+            if(!isAdmin) return;
             selectedMsgId = mid; selectedUid = uid; selectedName = name;
             document.getElementById('mod-user-title').innerText = `@${name}`;
             document.getElementById('mod-modal').style.display = 'flex';
@@ -412,21 +321,16 @@
         window.closeMod = () => document.getElementById('mod-modal').style.display = 'none';
 
         window.modAction = async (type) => {
-            if(!isAdmin) return;
             await deleteDoc(doc(db, "messages", selectedMsgId));
             if (type === 'strike') {
                 const uDoc = await getDoc(doc(db, "users", selectedUid));
                 const s = (uDoc.data()?.strikes || 3) - 1;
                 await updateDoc(doc(db, "users", selectedUid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
-                await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${selectedName} hit ${s} strikes and is ${s <= 0 ? 'SUSPENDED' : 'STRIKED'}.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
-            } else if (type === 'warn') {
-                await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: @${selectedName} - FINAL WARNING.`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
             }
             closeMod();
         };
 
         window.registerUser = async () => {
-            if(!isAdmin) return;
             const u = document.getElementById('reg-user').value.toLowerCase().trim();
             const p = document.getElementById('reg-pass').value;
             const r = document.getElementById('reg-role').value;
@@ -445,16 +349,15 @@
                     const isSusp = data.status === 'suspended';
                     list.innerHTML += `<tr>
                         <td><b>${data.username}</b><br><small>${data.role}</small></td>
-                        <td style="color:${isSusp ? 'var(--accent-red)' : 'var(--accent-green)'}; font-weight:800;">${data.status.toUpperCase()}</td>
+                        <td style="color:${isSusp ? 'red' : 'green'}; font-weight:800;">${data.status.toUpperCase()}</td>
                         <td>${data.strikes}/3</td>
-                        <td><span class="action-btn ${isSusp ? 'btn-unsuspend' : 'btn-suspend'}" onclick="setUserStatus('${d.id}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span></td>
+                        <td><span class="action-btn" onclick="setUserStatus('${d.id}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span></td>
                     </tr>`;
                 });
             });
         };
 
         window.setUserStatus = async (uid, status) => {
-            if(!isAdmin) return;
             await updateDoc(doc(db, "users", uid), { status: status, strikes: status === 'active' ? 3 : 0 });
         };
 
@@ -465,11 +368,19 @@
         };
 
         window.promptNuke = async () => {
-            if(!isAdmin) return;
             if(confirm("THIS WILL WIPE ALL CHAT HISTORY. PROCEED?")) {
                 const q = await getDocs(collection(db, "messages"));
                 q.forEach(async (d) => await deleteDoc(d.ref));
             }
+        };
+
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
+        window.showTab = (id, el) => {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+            if(window.innerWidth <= 768) toggleSidebar();
         };
     </script>
 </body>
