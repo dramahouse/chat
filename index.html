@@ -18,7 +18,6 @@
             --accent-green: #34c759;
         }
 
-        /* RESET & BASE */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         html, body { 
@@ -33,21 +32,19 @@
             -webkit-user-select: none;
         }
 
-        /* SCREENSHOT PROTECTOR OVERLAY */
+        /* HARD-CODED SCREENSHOT BLACKOUT */
         #anti-screenshot {
             display: none;
             position: fixed;
             inset: 0;
-            background: black;
-            z-index: 2000000;
+            background: #000 !important;
+            z-index: 9999999;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
         }
 
-        /* VERSION TAG */
         .version-tag {
             position: fixed;
             bottom: 12px;
@@ -61,7 +58,6 @@
             text-transform: uppercase;
         }
 
-        /* SUSPENSION OVERLAY */
         #suspension-overlay {
             display: none;
             position: fixed;
@@ -75,7 +71,6 @@
             padding: 40px;
         }
 
-        /* MOBILE HEADER */
         #mobile-nav {
             display: none;
             height: 65px;
@@ -88,7 +83,6 @@
             padding-top: env(safe-area-inset-top);
         }
 
-        /* LOGIN SCREEN */
         #login-screen { position: fixed; inset: 0; background: black; display: flex; justify-content: center; align-items: center; z-index: 10000; }
         .login-card { width: 90%; max-width: 380px; text-align: center; }
         .login-card h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 30px; letter-spacing: -2px; filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055); }
@@ -96,7 +90,6 @@
         .input-group input, .input-group select { background: var(--bg-input); border: none; padding: 20px; color: white; font-size: 1.1rem; outline: none; border-bottom: 1px solid var(--border); }
         .btn-signin { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
-        /* APP LAYOUT */
         #app-container { display: none; flex: 1; height: 100%; overflow: hidden; position: relative; }
         
         .sidebar { 
@@ -116,13 +109,11 @@
         .nav-link.active { color: white; background: #1a1a1a; }
         .logout-link { margin-top: auto; color: #ff4d4d; font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 12px 16px; }
 
-        /* CONTENT AREA */
         .content-area { flex: 1; height: 100%; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .view { display: none; flex-direction: column; height: 100%; padding: 20px; }
         .view.active { display: flex; }
         .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 15px; text-transform: uppercase; }
 
-        /* CHAT BUBBLES */
         .chat-container { flex: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
         
@@ -149,11 +140,9 @@
         .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 14px; border-radius: 8px; color: white; outline: none; font-size: 16px; }
         .btn-send { background: white; color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-        /* MODAL */
         #mod-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; justify-content: center; align-items: center; }
         .modal-card { background: #0a0a0a; border: 1px solid var(--border); padding: 30px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; }
 
-        /* MANAGEMENT */
         .mgmt-scroll { flex: 1; overflow-y: auto; }
         .card { background: #080808; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .card-label { font-size: 0.75rem; font-weight: 800; color: var(--text-dim); margin-bottom: 15px; display: block; }
@@ -179,10 +168,10 @@
 
     <div id="anti-screenshot">
         <h1 style="color:white; font-weight: 900; letter-spacing: -2px; font-size: 2.5rem;">NO SCREENSHOTS ALLOWED</h1>
-        <p style="color:red; font-weight: 800; margin-top: 15px; font-size: 1.2rem; text-transform: uppercase;">1 Strike on your gallery</p>
+        <p style="color:red; font-weight: 800; margin-top: 15px; font-size: 1.2rem;">1 STRIKE ON YOUR GALLERY</p>
     </div>
 
-    <div class="version-tag">V1.2.7</div>
+    <div class="version-tag">V1.2.8</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
@@ -290,53 +279,57 @@
 
         let selectedMsgId, selectedUid, selectedName, statusUnsub, isAdmin = false;
 
-        // --- ENHANCED SCREENSHOT DETECTION (v1.2.7) ---
+        // --- ULTRA AGGRESSIVE DETECTION ENGINE (v1.2.8) ---
         const detector = document.getElementById('anti-screenshot');
-        
-        const triggerDefense = async () => {
-            if (!auth.currentUser) return;
+        let strikeCooldown = false;
+
+        const executeStrike = async () => {
+            if (!auth.currentUser || strikeCooldown) return;
+            strikeCooldown = true;
             
-            // Show blackout immediately
+            // UI Blackout
             detector.style.display = 'flex';
             
             const uid = auth.currentUser.uid;
             const uDoc = await getDoc(doc(db, "users", uid));
-            const userData = uDoc.data();
-            
-            // Send House Bot alert (Everyone sees this, even for Admin testing)
+            const uData = uDoc.data();
+            const name = uData.username || "Unknown";
+
+            // Bot Alert
             await addDoc(collection(db, "messages"), { 
-                text: `[HOUSE BOT]: @${userData.username} attempted a screenshot/clip.`, 
-                user: 'HOUSE_BOT', 
-                uid: 'bot', 
-                time: Date.now() 
+                text: `[HOUSE BOT]: @${name} attempted a screenshot/capture. Strike Issued.`, 
+                user: 'HOUSE_BOT', uid: 'bot', time: Date.now() 
             });
 
-            // Only apply the strike if NOT an admin
+            // Strike DB (Unless it's you testing)
             if (!isAdmin) {
-                const currentStrikes = userData.strikes || 3;
-                const newStrikes = currentStrikes - 1;
-                await updateDoc(doc(db, "users", uid), { 
-                    strikes: newStrikes, 
-                    status: newStrikes <= 0 ? 'suspended' : 'active' 
-                });
+                const s = (uData.strikes || 3) - 1;
+                await updateDoc(doc(db, "users", uid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
             }
+
+            setTimeout(() => { strikeCooldown = false; }, 5000);
         };
 
-        // Detects when user minimizes app, pulls down control center (iOS), or takes a snap
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === 'hidden') {
-                triggerDefense();
+        // Heartbeat Monitor: Detects any interruption in execution (Common during hardware triggers)
+        let lastTime = Date.now();
+        setInterval(() => {
+            let currentTime = Date.now();
+            if (currentTime - lastTime > 100) { // If logic pauses for >100ms
+                executeStrike();
             }
+            lastTime = currentTime;
+        }, 50);
+
+        // Standard Listeners
+        window.addEventListener('blur', executeStrike);
+        window.addEventListener('visibilitychange', () => { if (document.hidden) executeStrike(); });
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'PrintScreen' || (e.metaKey && e.shiftKey)) executeStrike();
         });
 
-        // Detects desktop PrintScreen or app switching
-        window.onblur = triggerDefense;
+        window.onfocus = () => { setTimeout(() => { detector.style.display = 'none'; }, 2000); };
 
-        window.onfocus = () => {
-            setTimeout(() => { detector.style.display = 'none'; }, 2000);
-        };
-
-        // Standard App Logic
+        // Standard App Functions
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
         window.showTab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -354,14 +347,12 @@
                     document.getElementById('suspension-overlay').style.display = 'flex';
                     return; 
                 }
-
                 statusUnsub = onSnapshot(doc(db, "users", user.uid), (s) => {
                     if (s.data()?.status === 'suspended') {
                         document.getElementById('app-container').style.display = 'none';
                         document.getElementById('suspension-overlay').style.display = 'flex';
                     }
                 });
-
                 isAdmin = user.email.includes('admin.logan') || uDoc.data()?.role === 'admin';
                 if (isAdmin) {
                     document.body.classList.add('is-admin');
@@ -395,7 +386,6 @@
                     const isBot = data.uid === 'bot';
                     const isMe = auth.currentUser?.uid === data.uid;
                     const delHtml = isAdmin ? `<span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">×</span>` : '';
-                    
                     msgBox.innerHTML += `
                         <div class="msg-wrapper">
                             <div class="msg ${isMe ? 'me' : ''} ${isBot ? 'bot' : ''}">
@@ -454,9 +444,7 @@
                         <td><b>${data.username}</b><br><small>${data.role}</small></td>
                         <td style="color:${isSusp ? 'var(--accent-red)' : 'var(--accent-green)'}; font-weight:800;">${data.status.toUpperCase()}</td>
                         <td>${data.strikes}/3</td>
-                        <td>
-                            <span class="action-btn ${isSusp ? 'btn-unsuspend' : 'btn-suspend'}" onclick="setUserStatus('${d.id}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span>
-                        </td>
+                        <td><span class="action-btn ${isSusp ? 'btn-unsuspend' : 'btn-suspend'}" onclick="setUserStatus('${d.id}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span></td>
                     </tr>`;
                 });
             });
