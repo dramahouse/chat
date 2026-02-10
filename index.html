@@ -40,9 +40,11 @@
             inset: 0;
             background: black;
             z-index: 2000000;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
+            padding: 20px;
         }
 
         /* VERSION TAG */
@@ -176,11 +178,11 @@
 <body>
 
     <div id="anti-screenshot">
-        <h1 style="color:white; font-weight: 900; letter-spacing: -2px;">NO SCREENSHOTS ALLOWED</h1>
-        <p style="color:red; font-weight: 800; margin-top: 10px;">1 STRIKE ON YOUR GALLERY</p>
+        <h1 style="color:white; font-weight: 900; letter-spacing: -2px; font-size: 2.5rem;">NO SCREENSHOTS ALLOWED</h1>
+        <p style="color:red; font-weight: 800; margin-top: 15px; font-size: 1.2rem; text-transform: uppercase;">1 Strike on your gallery</p>
     </div>
 
-    <div class="version-tag">V1.2.5</div>
+    <div class="version-tag">V1.2.6</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
@@ -290,16 +292,18 @@
 
         // --- SCREENSHOT DETECTION ---
         const detector = document.getElementById('anti-screenshot');
+        let isBlured = false;
         
         window.onblur = async () => {
-            if (!auth.currentUser || isAdmin) return;
+            if (!auth.currentUser || isAdmin || isBlured) return;
+            isBlured = true;
             detector.style.display = 'flex';
             
             // Strike the user
             const uid = auth.currentUser.uid;
             const uDoc = await getDoc(doc(db, "users", uid));
-            const data = uDoc.data();
-            const currentStrikes = data.strikes || 3;
+            const userData = uDoc.data();
+            const currentStrikes = userData.strikes || 3;
             const newStrikes = currentStrikes - 1;
             
             await updateDoc(doc(db, "users", uid), { 
@@ -308,7 +312,7 @@
             });
 
             await addDoc(collection(db, "messages"), { 
-                text: `[HOUSE BOT]: @${data.username} attempted a screenshot. STRIKE ISSUED.`, 
+                text: `[HOUSE BOT]: @${userData.username} attempted a screenshot. STRIKE ISSUED (${newStrikes}/3 left).`, 
                 user: 'HOUSE_BOT', 
                 uid: 'bot', 
                 time: Date.now() 
@@ -316,7 +320,10 @@
         };
 
         window.onfocus = () => {
-            setTimeout(() => { detector.style.display = 'none'; }, 1000);
+            setTimeout(() => { 
+                detector.style.display = 'none'; 
+                isBlured = false;
+            }, 1500);
         };
 
         // Standard App Logic
