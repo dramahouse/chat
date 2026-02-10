@@ -31,68 +31,32 @@
         }
 
         .version-tag {
-            position: fixed;
-            bottom: 12px;
-            right: 15px;
-            font-size: 11px;
-            font-weight: 800;
-            color: rgba(255, 255, 255, 0.4);
-            z-index: 1000000;
-            pointer-events: none;
+            position: fixed; bottom: 12px; right: 15px; font-size: 11px;
+            font-weight: 800; color: rgba(255, 255, 255, 0.4); z-index: 1000000;
         }
 
-        #suspension-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: black;
-            z-index: 100000;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px;
+        #suspension-overlay, #lockdown-overlay {
+            display: none; position: fixed; inset: 0; background: black;
+            z-index: 200000; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center; padding: 40px;
         }
 
         #mobile-nav {
-            display: none;
-            height: 65px;
-            border-bottom: 1px solid var(--border);
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            background: var(--bg-black);
-            z-index: 1001;
-            padding-top: env(safe-area-inset-top);
+            display: none; height: 65px; border-bottom: 1px solid var(--border);
+            align-items: center; justify-content: space-between; padding: 0 20px;
+            background: var(--bg-black); z-index: 1001; padding-top: env(safe-area-inset-top);
         }
 
-        /* LOGIN DESIGN */
         #login-screen { position: fixed; inset: 0; background: black; display: flex; justify-content: center; align-items: center; z-index: 10000; }
         .login-card { width: 90%; max-width: 380px; text-align: center; }
-        .login-card h1 { 
-            font-size: 2.5rem; 
-            font-weight: 800; 
-            margin-bottom: 30px; 
-            letter-spacing: -2px; 
-            filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055);
-        }
+        .login-card h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 30px; letter-spacing: -2px; filter: drop-shadow(2px 0px 0px #00fffb) drop-shadow(-2px 0px 0px #ff0055); }
         .input-group { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 25px; }
         .input-group input { background: var(--bg-input); border: none; padding: 20px; color: white; font-size: 1.1rem; outline: none; border-bottom: 1px solid var(--border); }
         .btn-signin { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
 
         #app-container { display: none; flex: 1; height: 100%; overflow: hidden; position: relative; }
         
-        .sidebar { 
-            width: 240px; 
-            background: var(--bg-black); 
-            padding: 30px 20px; 
-            border-right: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 8px; 
-            height: 100%;
-            transition: transform 0.3s ease;
-        }
+        .sidebar { width: 240px; background: var(--bg-black); padding: 30px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; height: 100%; transition: transform 0.3s ease; }
         .nav-link { color: var(--text-dim); padding: 12px 16px; font-weight: 600; cursor: pointer; border-radius: 8px; font-size: 0.9rem; }
         .nav-link.active { color: white; background: #1a1a1a; }
         .logout-link { margin-top: auto; color: #ff4d4d; font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 12px 16px; }
@@ -102,22 +66,13 @@
         .view.active { display: flex; }
         .view-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 15px; text-transform: uppercase; }
 
-        /* CHAT */
         .chat-container { flex: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         
         .msg-wrapper { display: flex; flex-direction: column; width: 100%; }
-        .msg { 
-            background: #111; 
-            border: 1px solid var(--border); 
-            padding: 10px 14px; 
-            border-radius: 12px; 
-            max-width: 85%; 
-            position: relative; 
-            align-self: flex-start;
-            word-wrap: break-word;
-        }
+        .msg { background: #111; border: 1px solid var(--border); padding: 10px 14px; border-radius: 12px; max-width: 85%; position: relative; align-self: flex-start; word-wrap: break-word; }
         .msg.me { align-self: flex-end; background: #222; }
+        .msg.bot { align-self: center; background: transparent; border: none; color: var(--accent-red); font-weight: 900; text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
         
         .msg-user { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); margin-bottom: 3px; display: block; text-transform: lowercase; }
         .del-btn { position: absolute; top: -8px; right: -8px; color: var(--accent-red); cursor: pointer; background: black; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 18px; border: 1px solid var(--border); display: none; font-weight: 900; }
@@ -126,7 +81,6 @@
         .chat-footer { padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--border); background: var(--bg-black); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .chat-input { flex-grow: 1; background: #0e0e0e; border: 1px solid var(--border); padding: 14px; border-radius: 8px; color: white; outline: none; font-size: 16px; }
 
-        /* MANAGEMENT */
         #mod-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50000; justify-content: center; align-items: center; }
         .modal-card { background: #0a0a0a; border: 1px solid var(--border); padding: 30px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; }
 
@@ -151,12 +105,19 @@
 </head>
 <body>
 
-    <div class="version-tag">V1.3.7</div>
+    <div class="version-tag">V1.4.2</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
         <h2 style="font-weight: 800;">ACCOUNT SUSPENDED</h2>
-        <button class="btn-signin" style="width: 200px; margin-top: 40px;" onclick="location.reload()">Refresh Status</button>
+        <p style="color: var(--text-dim); margin-top: 10px;">You have been evicted from the House.</p>
+        <button class="btn-signin" style="width: 200px; margin-top: 40px;" onclick="location.reload()">Return to Login</button>
+    </div>
+
+    <div id="lockdown-overlay">
+        <h1 style="font-size: 8rem;">🚫</h1>
+        <h2 style="font-weight: 800; letter-spacing: 2px;">HOUSE UNDER MAINTENANCE</h2>
+        <p style="color: var(--text-dim); margin-top: 10px;">Access restricted by Administration.</p>
     </div>
 
     <div id="mod-modal">
@@ -229,8 +190,13 @@
                     </div>
 
                     <div class="card">
-                        <span class="card-label">SYSTEM</span>
+                        <span class="card-label">SYSTEM HISTORY</span>
                         <button class="btn-red-fill" onclick="promptNuke()">NUKE ALL MESSAGES</button>
+                    </div>
+
+                    <div class="card" style="border: 2px solid var(--accent-red); margin-top: 20px;">
+                        <span class="card-label" style="color: var(--accent-red);">GLOBAL CONTROL</span>
+                        <button id="lockdown-btn" class="btn-red-fill" onclick="toggleLockdown()">ACTIVATE LOCKDOWN</button>
                     </div>
                 </div>
             </div>
@@ -255,22 +221,52 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let selectedMsgId, selectedUid, selectedName, isAdmin = false;
+        let selectedMsgId, selectedUid, selectedName, isAdmin = false, isCurrentlyLocked = false, userStatusSub = null;
+
+        const forbiddenPatterns = [/f[au*@k]/i, /sh[i*@t]/i, /b[i*@tch]/i, /n[i*@gg]/i, /p[u*@ssy]/i, /c[u*@nt]/i];
+
+        function isViolating(text) { return forbiddenPatterns.some(pattern => pattern.test(text)); }
+
+        // LOCKDOWN LISTENER
+        onSnapshot(doc(db, "system", "status"), (docSnap) => {
+            if (docSnap.exists()) {
+                isCurrentlyLocked = docSnap.data().locked;
+                updateLockdownUI();
+            }
+        });
+
+        function updateLockdownUI() {
+            const overlay = document.getElementById('lockdown-overlay');
+            const lockBtn = document.getElementById('lockdown-btn');
+            if (isCurrentlyLocked) {
+                if (!isAdmin) overlay.style.display = 'flex';
+                if (lockBtn) { lockBtn.innerText = "DISABLE LOCKDOWN"; lockBtn.style.background = "var(--accent-green)"; }
+            } else {
+                overlay.style.display = 'none';
+                if (lockBtn) { lockBtn.innerText = "ACTIVATE LOCKDOWN"; lockBtn.style.background = "var(--accent-red)"; }
+            }
+        }
 
         onAuthStateChanged(auth, async (user) => {
+            if (userStatusSub) userStatusSub();
             if (user) {
+                userStatusSub = onSnapshot(doc(db, "users", user.uid), (d) => {
+                    if (d.exists() && d.data().status === 'suspended') {
+                        document.getElementById('app-container').style.display = 'none';
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('suspension-overlay').style.display = 'flex';
+                        signOut(auth);
+                    }
+                });
+
                 const uDoc = await getDoc(doc(db, "users", user.uid));
-                if (uDoc.exists() && uDoc.data().status === 'suspended') {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('suspension-overlay').style.display = 'flex';
-                    return;
-                }
                 isAdmin = user.email.includes('admin.logan') || uDoc.data()?.role === 'admin';
                 if (isAdmin) {
                     document.body.classList.add('is-admin');
                     document.querySelectorAll('.admin-ui').forEach(el => el.style.display = 'block');
                     loadUserList();
                 }
+                updateLockdownUI();
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-container').style.display = 'flex';
                 loadChat();
@@ -280,10 +276,27 @@
             }
         });
 
+        window.toggleLockdown = async () => {
+            if (!isAdmin) return;
+            try {
+                // Use setDoc with merge to ensure doc creation works
+                await setDoc(doc(db, "system", "status"), { locked: !isCurrentlyLocked }, { merge: true });
+            } catch (e) {
+                alert("Error: Check your Firestore Security Rules. " + e.message);
+            }
+        };
+
         window.handleLogin = async () => {
             const u = document.getElementById('login-user').value.toLowerCase().trim();
             const p = document.getElementById('login-pass').value;
-            try { await signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p); } catch (e) { alert("Access Denied."); }
+            try { 
+                const cred = await signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
+                const uDoc = await getDoc(doc(db, "users", cred.user.uid));
+                if (uDoc.exists() && uDoc.data().status === 'suspended') {
+                    signOut(auth);
+                    alert("Account is suspended.");
+                }
+            } catch (e) { alert("Access Denied."); }
         };
 
         window.handleLogout = () => signOut(auth).then(() => location.reload());
@@ -295,17 +308,10 @@
                 msgBox.innerHTML = '';
                 snap.forEach(docSnap => {
                     const data = docSnap.data();
+                    const isBot = data.uid === 'bot';
                     const isMe = auth.currentUser?.uid === data.uid;
-                    const delHtml = isAdmin ? `<span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">×</span>` : '';
-                    
-                    msgBox.innerHTML += `
-                        <div class="msg-wrapper">
-                            <div class="msg ${isMe ? 'me' : ''}">
-                                <span class="msg-user">${data.user}</span>
-                                ${delHtml}
-                                ${data.text}
-                            </div>
-                        </div>`;
+                    const delHtml = isAdmin && !isBot ? `<span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">×</span>` : '';
+                    msgBox.innerHTML += `<div class="msg-wrapper"><div class="msg ${isMe ? 'me' : ''} ${isBot ? 'bot' : ''}">${isBot ? '' : `<span class="msg-user">${data.user}</span>`}${delHtml}${data.text}</div></div>`;
                 });
                 msgBox.scrollTop = msgBox.scrollHeight;
             });
@@ -334,9 +340,11 @@
             const u = document.getElementById('reg-user').value.toLowerCase().trim();
             const p = document.getElementById('reg-pass').value;
             const r = document.getElementById('reg-role').value;
-            const cred = await createUserWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
-            await setDoc(doc(db, "users", cred.user.uid), { username: u, role: r, status: 'active', strikes: 3 });
-            alert("Resident Created.");
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
+                await setDoc(doc(db, "users", cred.user.uid), { username: u, role: r, status: 'active', strikes: 3 });
+                alert("Resident Created.");
+            } catch (e) { alert(e.message); }
         };
 
         window.loadUserList = () => {
@@ -347,12 +355,7 @@
                     const data = d.data();
                     if(data.username === 'admin.logan') return;
                     const isSusp = data.status === 'suspended';
-                    list.innerHTML += `<tr>
-                        <td><b>${data.username}</b><br><small>${data.role}</small></td>
-                        <td style="color:${isSusp ? 'red' : 'green'}; font-weight:800;">${data.status.toUpperCase()}</td>
-                        <td>${data.strikes}/3</td>
-                        <td><span class="action-btn" onclick="setUserStatus('${d.id}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span></td>
-                    </tr>`;
+                    list.innerHTML += `<tr><td><b>${data.username}</b><br><small>${data.role}</small></td><td style="color:${isSusp ? 'red' : 'green'}; font-weight:800;">${data.status.toUpperCase()}</td><td>${data.strikes}/3</td><td><span class="action-btn" onclick="setUserStatus('${d.id}', '${isSusp ? 'active' : 'suspended'}')">${isSusp ? 'Restore' : 'Suspend'}</span></td></tr>`;
                 });
             });
         };
@@ -363,12 +366,21 @@
 
         window.sendMessage = async () => {
             const v = document.getElementById('chat-input').value; if(!v) return;
-            await addDoc(collection(db, "messages"), { text: v, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, time: Date.now() });
+            const uid = auth.currentUser.uid;
+            const username = auth.currentUser.email.split('@')[0];
+            if (isViolating(v)) {
+                document.getElementById('chat-input').value = '';
+                const uDoc = await getDoc(doc(db, "users", uid));
+                const s = (uDoc.data()?.strikes || 3) - 1;
+                await updateDoc(doc(db, "users", uid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
+                return;
+            }
+            await addDoc(collection(db, "messages"), { text: v, user: username, uid: uid, time: Date.now() });
             document.getElementById('chat-input').value = '';
         };
 
         window.promptNuke = async () => {
-            if(confirm("THIS WILL WIPE ALL CHAT HISTORY. PROCEED?")) {
+            if(confirm("NUKE ALL?")) {
                 const q = await getDocs(collection(db, "messages"));
                 q.forEach(async (d) => await deleteDoc(d.ref));
             }
