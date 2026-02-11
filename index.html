@@ -108,7 +108,7 @@
 </head>
 <body>
 
-    <div class="version-tag">V1.4.7</div>
+    <div class="version-tag">V1.4.9</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
@@ -426,12 +426,22 @@
             const uid = auth.currentUser.uid;
             const uDoc = await getDoc(doc(db, "users", uid));
             const username = uDoc.data()?.username || auth.currentUser.email.split('@')[0];
-            const forbidden = [/f[au*@k]/i, /sh[i*@t]/i, /b[i*@tch]/i, /n[i*@gg]/i, /p[u*@ssy]/i, /c[u*@nt]/i];
+            
+            // STRICT FILTER: Using \b ensures patterns like "tic" in "restrictions" are ignored.
+            const forbidden = [
+                /\bf[au*@k]k?\b/i, 
+                /\bsh[i*@t]t?\b/i, 
+                /\bb[i*@tch]h?\b/i, 
+                /\bn[i*@gg]er?\b/i, 
+                /\bp[u*@ssy]y?\b/i, 
+                /\bc[u*@nt]t?\b/i
+            ];
+
             if (forbidden.some(pattern => pattern.test(v))) {
                 document.getElementById('chat-input').value = '';
                 const s = (uDoc.data()?.strikes || 3) - 1;
                 await updateDoc(doc(db, "users", uid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
-                await botMessage(`Auto-Strike issued to @${username} (${s}/3).`);
+                await botMessage(`Auto-Strike issued to @${username} (${s}/3). Avoid restricted words.`);
                 return;
             }
             await addDoc(collection(db, "messages"), { text: v, user: username, uid: uid, time: Date.now() });
