@@ -70,13 +70,33 @@
         .chat-container { flex: 1; display: flex; flex-direction: column; background: #050505; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
         #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         
-        .msg-wrapper { display: flex; flex-direction: column; width: 100%; }
+        .msg-wrapper { display: flex; flex-direction: column; width: 100%; position: relative; }
         .msg { background: #111; border: 1px solid var(--border); padding: 10px 14px; border-radius: 12px; max-width: 85%; position: relative; align-self: flex-start; word-wrap: break-word; }
         .msg.me { align-self: flex-end; background: #222; }
         .msg.bot { align-self: center; background: transparent; border: none; color: var(--accent-red); font-weight: 900; text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 5px 0; }
         
         .msg-user { font-size: 0.65rem; font-weight: 800; color: var(--text-dim); margin-bottom: 3px; display: block; text-transform: lowercase; }
-        .del-btn { position: absolute; top: -8px; right: -8px; color: var(--accent-red); cursor: pointer; background: black; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 18px; border: 1px solid var(--border); display: none; font-weight: 900; }
+        
+        /* Fixed Del Button Anchoring */
+        .del-btn { 
+            position: absolute; 
+            top: -8px; 
+            right: -8px; 
+            color: white; 
+            background: var(--accent-red); 
+            border-radius: 50%; 
+            width: 24px; 
+            height: 24px; 
+            text-align: center; 
+            line-height: 22px; 
+            border: 2px solid #000; 
+            display: none; 
+            font-weight: 900; 
+            z-index: 100; 
+            cursor: pointer; 
+            font-size: 14px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
         body.is-admin .del-btn { display: block; }
         
         .chat-footer { padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--border); background: var(--bg-black); padding-bottom: calc(12px + env(safe-area-inset-top)); }
@@ -108,7 +128,7 @@
 </head>
 <body>
 
-    <div class="version-tag">V1.4.9</div>
+    <div class="version-tag">V1.5.1</div>
 
     <div id="suspension-overlay">
         <h1 style="font-size: 5rem;">🚫</h1>
@@ -128,7 +148,7 @@
             <h3 id="mod-user-title" style="margin-bottom: 20px;">Moderate</h3>
             <button class="btn-red-fill" onclick="modAction('strike')" style="margin-bottom:10px;">Strike Resident</button>
             <button class="btn-red-fill" onclick="modAction('suspend')" style="margin-bottom:10px; background: #9c0000;">Suspend Account</button>
-            <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Delete Message</button>
+            <button class="btn-signin" onclick="modAction('delete')" style="background: transparent; border: 1px solid #333; color: white;">Delete Message Only</button>
             <button onclick="closeMod()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; margin-top:15px; font-weight: 800;">CANCEL</button>
         </div>
     </div>
@@ -359,8 +379,18 @@
                     const data = docSnap.data();
                     const isBot = data.uid === 'bot';
                     const isMe = auth.currentUser?.uid === data.uid;
-                    const delHtml = isAdmin && !isBot ? `<span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">×</span>` : '';
-                    msgBox.innerHTML += `<div class="msg-wrapper"><div class="msg ${isMe ? 'me' : ''} ${isBot ? 'bot' : ''}">${isBot ? '' : `<span class="msg-user">${data.user}</span>`}${delHtml}${data.text}</div></div>`;
+                    
+                    // FIXED: Admin delete button now nested inside msg-wrapper with better layout
+                    const delHtml = (isAdmin && !isBot) ? `<span class="del-btn" onclick="openMod('${docSnap.id}', '${data.uid}', '${data.user}')">×</span>` : '';
+                    
+                    msgBox.innerHTML += `
+                        <div class="msg-wrapper">
+                            <div class="msg ${isMe ? 'me' : ''} ${isBot ? 'bot' : ''}">
+                                ${delHtml}
+                                ${isBot ? '' : `<span class="msg-user">${data.user}</span>`}
+                                ${data.text}
+                            </div>
+                        </div>`;
                 });
                 msgBox.scrollTop = msgBox.scrollHeight;
             });
@@ -377,7 +407,9 @@
 
         window.modAction = async (type) => {
             if (type === 'delete' || type === 'strike' || type === 'suspend') {
-                await deleteDoc(doc(db, "messages", selectedMsgId));
+                if (selectedMsgId) {
+                    await deleteDoc(doc(db, "messages", selectedMsgId));
+                }
             }
             if (type === 'strike') {
                 const uDoc = await getDoc(doc(db, "users", selectedUid));
@@ -427,12 +459,12 @@
             const uDoc = await getDoc(doc(db, "users", uid));
             const username = uDoc.data()?.username || auth.currentUser.email.split('@')[0];
             
-            // STRICT FILTER: Using \b ensures patterns like "tic" in "restrictions" are ignored.
+            // EXPANDED SLUR FILTER
             const forbidden = [
                 /\bf[au*@k]k?\b/i, 
                 /\bsh[i*@t]t?\b/i, 
                 /\bb[i*@tch]h?\b/i, 
-                /\bn[i*@gg]er?\b/i, 
+                /\bn[i1l*@g][i1l*@g][e3*ra@]\b/i, 
                 /\bp[u*@ssy]y?\b/i, 
                 /\bc[u*@nt]t?\b/i
             ];
