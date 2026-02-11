@@ -237,7 +237,6 @@
         const db = getFirestore(app);
 
         let selectedMsgId, selectedUid, selectedName, isAdmin = false, isCurrentlyLocked = false, userStatusSub = null;
-        const forbiddenPatterns = [/f[au*@k]/i, /sh[i*@t]/i, /b[i*@tch]/i, /n[i*@gg]/i, /p[u*@ssy]/i, /c[u*@nt]/i];
         
         async function botMessage(text) {
             await addDoc(collection(db, "messages"), { text: `[HOUSE BOT]: ${text}`, user: 'HOUSE_BOT', uid: 'bot', time: Date.now() });
@@ -294,7 +293,6 @@
             }
         });
 
-        // POPULATE DROPDOWN
         function loadMgmtDropdown() {
             onSnapshot(collection(db, "users"), (snap) => {
                 const select = document.getElementById('mgmt-user-select');
@@ -316,21 +314,15 @@
             const newName = document.getElementById('mgmt-new-name').value.trim();
             const newPass = document.getElementById('mgmt-new-pass').value;
             if (!uid) return alert("Select a resident first.");
-            
             try {
-                if (newName) {
-                    await updateDoc(doc(db, "users", uid), { username: newName });
-                    alert(`Display name for user updated to ${newName}`);
-                }
-                if (newPass) {
-                    // Note: Changing passwords for other users requires Admin SDK or Re-auth. 
-                    // On client-side, this only works for the currently logged in admin's own password.
-                    if(uid === auth.currentUser.uid) {
-                        await updatePassword(auth.currentUser, newPass);
-                        alert("Your admin password has been updated.");
-                    } else {
-                        alert("Security Note: Password forcing requires Admin SDK. Use Registry to reset status instead.");
-                    }
+                if (newName) await updateDoc(doc(db, "users", uid), { username: newName });
+                if (newPass && uid === auth.currentUser.uid) {
+                    await updatePassword(auth.currentUser, newPass);
+                    alert("Account Updated.");
+                } else if (newPass) {
+                    alert("Admin Note: Manual force requires Admin SDK. Use Registry for status control.");
+                } else {
+                    alert("Profile Updated.");
                 }
             } catch (e) { alert("Error: " + e.message); }
         };
@@ -338,7 +330,7 @@
         window.forgotPasswordPrompt = async () => {
             const user = prompt("Enter your username:");
             if (user) {
-                await botMessage(`RECOVERY REQUEST: @${user} has requested a password reset. Admin, please contact them.`);
+                await botMessage(`RECOVERY REQUEST: @${user} has requested a password reset.`);
                 alert("Request sent to administration.");
             }
         };
@@ -353,9 +345,7 @@
         window.handleLogin = async () => {
             const u = document.getElementById('login-user').value.toLowerCase().trim();
             const p = document.getElementById('login-pass').value;
-            try { 
-                const cred = await signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p);
-            } catch (e) { alert("Access Denied."); }
+            try { await signInWithEmailAndPassword(auth, `${u}@dramahouse.xyz`, p); } catch (e) { alert("Access Denied."); }
         };
 
         window.handleLogout = () => signOut(auth).then(() => location.reload());
@@ -395,12 +385,9 @@
                 const finalStatus = s <= 0 ? 'suspended' : 'active';
                 await updateDoc(doc(db, "users", selectedUid), { strikes: s, status: finalStatus });
                 await botMessage(`Manual strike issued to @${selectedName}. Remaining: ${s}/3.`);
-                if(finalStatus === 'suspended') await botMessage(`@${selectedName} has been evicted.`);
             } else if (type === 'suspend') {
                 await updateDoc(doc(db, "users", selectedUid), { status: 'suspended', strikes: 0 });
-                await botMessage(`@${selectedName} has been immediately suspended by administration.`);
-            } else if (type === 'delete') {
-                await botMessage(`A message from @${selectedName} was removed by admin.`);
+                await botMessage(`@${selectedName} has been immediately suspended.`);
             }
             closeMod();
         };
@@ -431,8 +418,7 @@
 
         window.setUserStatus = async (uid, name, status) => {
             await updateDoc(doc(db, "users", uid), { status: status, strikes: status === 'active' ? 3 : 0 });
-            if (status === 'suspended') await botMessage(`@${name} has been suspended by administration.`);
-            else await botMessage(`@${name} has been restored to the house.`);
+            await botMessage(`@${name} has been ${status === 'suspended' ? 'suspended' : 'restored'}.`);
         };
 
         window.sendMessage = async () => {
@@ -440,14 +426,12 @@
             const uid = auth.currentUser.uid;
             const uDoc = await getDoc(doc(db, "users", uid));
             const username = uDoc.data()?.username || auth.currentUser.email.split('@')[0];
-            const forbiddenPatterns = [/f[au*@k]/i, /sh[i*@t]/i, /b[i*@tch]/i, /n[i*@gg]/i, /p[u*@ssy]/i, /c[u*@nt]/i];
-            if (forbiddenPatterns.some(pattern => pattern.test(v))) {
+            const forbidden = [/f[au*@k]/i, /sh[i*@t]/i, /b[i*@tch]/i, /n[i*@gg]/i, /p[u*@ssy]/i, /c[u*@nt]/i];
+            if (forbidden.some(pattern => pattern.test(v))) {
                 document.getElementById('chat-input').value = '';
                 const s = (uDoc.data()?.strikes || 3) - 1;
-                const finalStatus = s <= 0 ? 'suspended' : 'active';
-                await updateDoc(doc(db, "users", uid), { strikes: s, status: finalStatus });
-                await botMessage(`Blocked message from @${username}. Automated Strike issued (${s}/3).`);
-                if(finalStatus === 'suspended') await botMessage(`@${username} has been evicted.`);
+                await updateDoc(doc(db, "users", uid), { strikes: s, status: s <= 0 ? 'suspended' : 'active' });
+                await botMessage(`Auto-Strike issued to @${username} (${s}/3).`);
                 return;
             }
             await addDoc(collection(db, "messages"), { text: v, user: username, uid: uid, time: Date.now() });
@@ -458,7 +442,7 @@
             if(confirm("NUKE ALL?")) {
                 const q = await getDocs(collection(db, "messages"));
                 q.forEach(async (d) => await deleteDoc(d.ref));
-                await botMessage("The chat history has been wiped by administration.");
+                await botMessage("The chat history has been wiped.");
             }
         };
 
